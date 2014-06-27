@@ -15,7 +15,7 @@ int g_ny = 0;
 int g_nc = 0;
 struct controls
 {
-    HWND redit, opta, optb, optc, optd;
+    HWND redit, opta, optb, optc, optd, optar, optbr, optcr, optdr;
 } g_controls[MAX_QUESTIONS];
 void CreateQuestion(HINSTANCE hInstance)
 {
@@ -24,29 +24,37 @@ void CreateQuestion(HINSTANCE hInstance)
         0, g_ny + 0, 640, 150,
         g_main, NULL, hInstance, NULL);
 
-    g_controls[g_nc].opta = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"Option A",
-        WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | WS_GROUP , 
+    g_controls[g_nc].opta = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"",
+        WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | WS_GROUP,
         10, g_ny + 160,
         150, 20,
         g_main, NULL, hInstance, NULL);
+    g_controls[g_nc].optar = CreateWindowEx(0, MSFTEDIT_CLASS, L"OPTION A", ES_MULTILINE | WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_READONLY,
+        0, 0, 0, 0, g_main, NULL, hInstance, NULL);
 
-    g_controls[g_nc].optb = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"Option B",
+    g_controls[g_nc].optb = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"",
         WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON,
         200, g_ny + 160,
         150, 20,
         g_main, NULL, hInstance, NULL);
+    g_controls[g_nc].optbr = CreateWindowEx(0, MSFTEDIT_CLASS, L"OPTION B", ES_MULTILINE | WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_READONLY,
+        0, 0, 0, 0, g_main, NULL, hInstance, NULL);
 
-    g_controls[g_nc].optc = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"Option C",
+    g_controls[g_nc].optc = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"",
         WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON,
         10, g_ny + 200,
         150, 20,
         g_main, NULL, hInstance, NULL);
+    g_controls[g_nc].optcr = CreateWindowEx(0, MSFTEDIT_CLASS, L"OPTION C", ES_MULTILINE | WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_READONLY,
+        0, 0, 0, 0, g_main, NULL, hInstance, NULL);
 
-    g_controls[g_nc].optd = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"Option D",
+    g_controls[g_nc].optd = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"",
         WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON,
         200, g_ny + 200,
         150, 20,
         g_main, NULL, hInstance, NULL);
+    g_controls[g_nc].optdr = CreateWindowEx(0, MSFTEDIT_CLASS, L"OPTION D", ES_MULTILINE | WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_READONLY,
+        0, 0, 0, 0, g_main, NULL, hInstance, NULL);
 
     g_ny += 50 * 5;
     g_nc++;
@@ -78,7 +86,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPInst, char* line, int show)
     CreateQuestion(hInstance);
     CreateQuestion(hInstance);
 
-    ShowWindow(g_main, show);
+    ShowWindow(g_main, SW_MAXIMIZE);
 
     MSG Msg = { 0 };
     while (GetMessageA(&Msg, 0, 0, 0))
@@ -96,27 +104,33 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     RECT rc;
     SCROLLINFO si;
 
+    int xoffset = 50, yoffset = 50;
     switch (msg)
     {
-    case WM_SIZE:       
+    case WM_SIZE:
         yClient = HIWORD(lParam);
         xClient = LOWORD(lParam);
 
         si.cbSize = sizeof(si);
         si.fMask = SIF_RANGE | SIF_PAGE;
         si.nMin = 0;
-        si.nMax = g_ny;
+        si.nMax = g_ny + yoffset;
         si.nPage = yClient;
         SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
 
         for (int i = 0; i < g_nc; ++i)
         {
-            int y = i * 50 * 5;
-            MoveWindow(g_controls[i].redit, 0, y, xClient, 150, true);
-            MoveWindow(g_controls[i].opta, 0, y + 160, xClient / 2, 20, true);
-            MoveWindow(g_controls[i].optb, xClient / 2, y + 160, xClient / 2, 20, true);
-            MoveWindow(g_controls[i].optc, 0, y + 200, xClient / 2, 20, true);
-            MoveWindow(g_controls[i].optd, xClient / 2, y + 200, xClient / 2, 20, true);
+            int y = yoffset + i * 50 * 5;
+            MoveWindow(g_controls[i].redit, xoffset + 0, y, xClient - xoffset * 2, 150, true);
+            MoveWindow(g_controls[i].opta, xoffset + 0, y + 160, 20, 20, true);
+            MoveWindow(g_controls[i].optb, xoffset + xClient / 2, y + 160, 20, 20, true);
+            MoveWindow(g_controls[i].optc, xoffset + 0, y + 200, 20, 20, true);
+            MoveWindow(g_controls[i].optd, xoffset + xClient / 2, y + 200, 20, 20, true);
+            MoveWindow(g_controls[i].optar, xoffset + 20, y + 160, xClient / 2 - 40 - xoffset, 20, true);
+            MoveWindow(g_controls[i].optbr, xClient / 2 + 20, y + 160, xClient / 2 - 40 - xoffset, 20, true);
+            MoveWindow(g_controls[i].optcr, xoffset + 20, y + 200, xClient / 2 - 40 - xoffset, 20, true);
+            MoveWindow(g_controls[i].optdr, xClient / 2 + 20, y + 200, xClient / 2 - 40 - xoffset, 20, true);
+
         }
         break;
     case WM_VSCROLL:
