@@ -123,9 +123,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             int y = yoffset + i * 50 * 5;
             MoveWindow(g_controls[i].redit, xoffset + 0, y, xClient - xoffset * 2, 150, true);
             MoveWindow(g_controls[i].opta, xoffset + 0, y + 160, 20, 20, true);
-            MoveWindow(g_controls[i].optb, xoffset + xClient / 2, y + 160, 20, 20, true);
+            MoveWindow(g_controls[i].optb, xClient / 2, y + 160, 20, 20, true);
             MoveWindow(g_controls[i].optc, xoffset + 0, y + 200, 20, 20, true);
-            MoveWindow(g_controls[i].optd, xoffset + xClient / 2, y + 200, 20, 20, true);
+            MoveWindow(g_controls[i].optd, xClient / 2, y + 200, 20, 20, true);
             MoveWindow(g_controls[i].optar, xoffset + 20, y + 160, xClient / 2 - 40 - xoffset, 20, true);
             MoveWindow(g_controls[i].optbr, xClient / 2 + 20, y + 160, xClient / 2 - 40 - xoffset, 20, true);
             MoveWindow(g_controls[i].optcr, xoffset + 20, y + 200, xClient / 2 - 40 - xoffset, 20, true);
@@ -139,10 +139,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         switch (LOWORD(wParam))
         {
         case SB_LINEUP:
-            VscrollPos -= 1;
+            VscrollPos -= 15;
             break;
         case SB_LINEDOWN:
-            VscrollPos += 1;
+            VscrollPos += 15;
             break;
         case SB_THUMBTRACK:
         case SB_THUMBPOSITION:
@@ -161,7 +161,42 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             UpdateWindow(g_main);
         }
         break;
+    case WM_KEYDOWN:
+    {
+                       WORD wScrollNotify = 0xFFFF;
 
+                       switch (wParam)
+                       {
+                       case VK_UP:
+                           wScrollNotify = SB_LINEUP;
+                           break;
+
+                       case VK_PRIOR:
+                           wScrollNotify = SB_PAGEUP;
+                           break;
+
+                       case VK_NEXT:
+                           wScrollNotify = SB_PAGEDOWN;
+                           break;
+
+                       case VK_DOWN:
+                           wScrollNotify = SB_LINEDOWN;
+                           break;
+
+                       case VK_HOME:
+                           wScrollNotify = SB_TOP;
+                           break;
+
+                       case VK_END:
+                           wScrollNotify = SB_BOTTOM;
+                           break;
+                       }
+
+                       if (wScrollNotify != -1)
+                           SendMessage(hwnd, WM_VSCROLL, MAKELONG(wScrollNotify, 0), 0L);
+
+                       break;
+    }
     case WM_DESTROY:
         PostQuitMessage(0);
         return 0;
