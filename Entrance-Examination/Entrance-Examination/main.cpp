@@ -3,6 +3,8 @@
 #include <Richedit.h>
 #include <stdio.h>
 
+#include "Page.h"
+
 HWND g_main;
 #pragma comment( lib, "comctl32.lib" )
 
@@ -13,53 +15,9 @@ int g_ny = 0;
 #define MAX_QUESTIONS 10
 
 int g_nc = 0;
-struct controls
-{
-    HWND redit, opta, optb, optc, optd, optar, optbr, optcr, optdr;
-} g_controls[MAX_QUESTIONS];
-void CreateQuestion(HINSTANCE hInstance)
-{
-    g_controls[g_nc].redit = CreateWindowEx(0, MSFTEDIT_CLASS, L"",
-        ES_MULTILINE | WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_READONLY,
-        0, g_ny + 0, 640, 150,
-        g_main, NULL, hInstance, NULL);
 
-    g_controls[g_nc].opta = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"",
-        WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | WS_GROUP,
-        10, g_ny + 160,
-        150, 20,
-        g_main, NULL, hInstance, NULL);
-    g_controls[g_nc].optar = CreateWindowEx(0, MSFTEDIT_CLASS, L"OPTION A", ES_MULTILINE | WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_READONLY,
-        0, 0, 0, 0, g_main, NULL, hInstance, NULL);
 
-    g_controls[g_nc].optb = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"",
-        WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON,
-        200, g_ny + 160,
-        150, 20,
-        g_main, NULL, hInstance, NULL);
-    g_controls[g_nc].optbr = CreateWindowEx(0, MSFTEDIT_CLASS, L"OPTION B", ES_MULTILINE | WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_READONLY,
-        0, 0, 0, 0, g_main, NULL, hInstance, NULL);
 
-    g_controls[g_nc].optc = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"",
-        WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON,
-        10, g_ny + 200,
-        150, 20,
-        g_main, NULL, hInstance, NULL);
-    g_controls[g_nc].optcr = CreateWindowEx(0, MSFTEDIT_CLASS, L"OPTION C", ES_MULTILINE | WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_READONLY,
-        0, 0, 0, 0, g_main, NULL, hInstance, NULL);
-
-    g_controls[g_nc].optd = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"",
-        WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON,
-        200, g_ny + 200,
-        150, 20,
-        g_main, NULL, hInstance, NULL);
-    g_controls[g_nc].optdr = CreateWindowEx(0, MSFTEDIT_CLASS, L"OPTION D", ES_MULTILINE | WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_READONLY,
-        0, 0, 0, 0, g_main, NULL, hInstance, NULL);
-
-    g_ny += 50 * 5;
-    g_nc++;
-
-}
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPInst, char* line, int show)
 {
     LoadLibrary(TEXT("Msftedit.dll"));
@@ -67,7 +25,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPInst, char* line, int show)
 
     WNDCLASSEX wc = { 0 };
     wc.cbSize = sizeof(WNDCLASSEX);
-    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW);
+    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
     wc.hInstance = hInstance;
@@ -78,15 +36,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPInst, char* line, int show)
     if (!RegisterClassEx(&wc))
         FatalAppExitA(0, "Couldn't register window class!");
 
-    g_main = CreateWindowEx(0, L"frobi-entranceexam", L"Entrance Examination", WS_OVERLAPPEDWINDOW | WS_VSCROLL, 64, 64, 640, 480, 0, 0, hInstance, 0);
+	g_main = CreateWindowEx(0, L"frobi-entranceexam", L"Entrance Examination", WS_OVERLAPPEDWINDOW | WS_VSCROLL, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), 0, 0, hInstance, 0);
+	SetWindowLong(g_main, GWL_STYLE, 0);
 
-    CreateQuestion(hInstance);
-    CreateQuestion(hInstance);
-    CreateQuestion(hInstance);
-    CreateQuestion(hInstance);
-    CreateQuestion(hInstance);
-
-    ShowWindow(g_main, SW_MAXIMIZE);
+    ShowWindow(g_main, SW_NORMAL);
 
     MSG Msg = { 0 };
     while (GetMessageA(&Msg, 0, 0, 0))
@@ -100,6 +53,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPInst, char* line, int show)
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+	static Page mainPage;
     static int VscrollPos = 0, prevpos, xClient, yClient;
     RECT rc;
     SCROLLINFO si;
@@ -107,6 +61,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     int xoffset = 50, yoffset = 50;
     switch (msg)
     {
+	case WM_CREATE:
+		mainPage.Initialize(hwnd);
     case WM_SIZE:
         yClient = HIWORD(lParam);
         xClient = LOWORD(lParam);
@@ -114,24 +70,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         si.cbSize = sizeof(si);
         si.fMask = SIF_RANGE | SIF_PAGE;
         si.nMin = 0;
-        si.nMax = g_ny + yoffset;
+        si.nMax = 10*300 + 50;
         si.nPage = yClient;
         SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
-
-        for (int i = 0; i < g_nc; ++i)
-        {
-            int y = yoffset + i * 50 * 5;
-            MoveWindow(g_controls[i].redit, xoffset + 0, y, xClient - xoffset * 2, 150, true);
-            MoveWindow(g_controls[i].opta, xoffset + 0, y + 160, 20, 20, true);
-            MoveWindow(g_controls[i].optb, xClient / 2, y + 160, 20, 20, true);
-            MoveWindow(g_controls[i].optc, xoffset + 0, y + 200, 20, 20, true);
-            MoveWindow(g_controls[i].optd, xClient / 2, y + 200, 20, 20, true);
-            MoveWindow(g_controls[i].optar, xoffset + 20, y + 160, xClient / 2 - 40 - xoffset, 20, true);
-            MoveWindow(g_controls[i].optbr, xClient / 2 + 20, y + 160, xClient / 2 - 40 - xoffset, 20, true);
-            MoveWindow(g_controls[i].optcr, xoffset + 20, y + 200, xClient / 2 - 40 - xoffset, 20, true);
-            MoveWindow(g_controls[i].optdr, xClient / 2 + 20, y + 200, xClient / 2 - 40 - xoffset, 20, true);
-
-        }
         break;
     case WM_VSCROLL:
         GetClientRect(g_main, &rc);
@@ -152,56 +93,50 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             break;
         }
 
-        VscrollPos = max(0, min(VscrollPos, g_ny));
+		VscrollPos = max(0, min(VscrollPos, 10 * 300 + 50));
 
         if (VscrollPos != GetScrollPos(hwnd, SB_VERT)) {
+			//mainPage.Scroll(GetScrollPos(hwnd, SB_VERT) - VscrollPos);
             SetScrollPos(hwnd, SB_VERT, VscrollPos, TRUE);
             InvalidateRect(hwnd, NULL, TRUE);
             ScrollWindowEx(g_main, 0, prevpos - VscrollPos, NULL, NULL, NULL, &rc, SW_SCROLLCHILDREN | SW_ERASE | SW_INVALIDATE);
             UpdateWindow(g_main);
-        }
-        break;
-    case WM_KEYDOWN:
-    {
-                       WORD wScrollNotify = 0xFFFF;
+		}
+		break;
+	case WM_KEYDOWN:
+		WORD wScrollNotify;
+		wScrollNotify = 0xFFFF;
 
-                       switch (wParam)
-                       {
-                       case VK_UP:
-                           wScrollNotify = SB_LINEUP;
-                           break;
+		switch (wParam)
+		{
+		case VK_UP:
+			wScrollNotify = SB_LINEUP;
+			break;
+		case VK_PRIOR:
+			wScrollNotify = SB_PAGEUP;
+			break;
+		case VK_NEXT:
+			wScrollNotify = SB_PAGEDOWN;
+			break;
+		case VK_DOWN:
+			wScrollNotify = SB_LINEDOWN;
+			break;
+		case VK_HOME:
+			wScrollNotify = SB_TOP;
+			break;
+		case VK_END:
+			wScrollNotify = SB_BOTTOM;
+			break;
+		}
 
-                       case VK_PRIOR:
-                           wScrollNotify = SB_PAGEUP;
-                           break;
+		if (wScrollNotify != -1)
+			SendMessage(hwnd, WM_VSCROLL, MAKELONG(wScrollNotify, 0), 0L);
 
-                       case VK_NEXT:
-                           wScrollNotify = SB_PAGEDOWN;
-                           break;
-
-                       case VK_DOWN:
-                           wScrollNotify = SB_LINEDOWN;
-                           break;
-
-                       case VK_HOME:
-                           wScrollNotify = SB_TOP;
-                           break;
-
-                       case VK_END:
-                           wScrollNotify = SB_BOTTOM;
-                           break;
-                       }
-
-                       if (wScrollNotify != -1)
-                           SendMessage(hwnd, WM_VSCROLL, MAKELONG(wScrollNotify, 0), 0L);
-
-                       break;
-    }
+		break;
     case WM_DESTROY:
         PostQuitMessage(0);
         return 0;
 
     }
-
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }
