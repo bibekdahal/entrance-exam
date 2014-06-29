@@ -37,9 +37,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPInst, char* line, int show)
         FatalAppExitA(0, "Couldn't register window class!");
 
 	g_main = CreateWindowEx(0, L"frobi-entranceexam", L"Entrance Examination", WS_OVERLAPPEDWINDOW | WS_VSCROLL, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), 0, 0, hInstance, 0);
-	SetWindowLong(g_main, GWL_STYLE, 0);
 
-    ShowWindow(g_main, SW_NORMAL);
+	ShowWindow(g_main, SW_SHOWMAXIMIZED);
+	
+	//Enable to go fullscreen
+	//SetWindowLong(g_main, GWL_STYLE, 0);
+	//ShowWindow(g_main, SW_NORMAL);
 
     MSG Msg = { 0 };
     while (GetMessageA(&Msg, 0, 0, 0))
