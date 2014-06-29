@@ -22,4 +22,12 @@
   <ItemGroup>
     <Manifest Include="Entrance-Examination.exe.manifest" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Question.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Page.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>

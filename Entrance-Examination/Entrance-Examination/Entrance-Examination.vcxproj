@@ -81,6 +81,10 @@
   <ItemGroup>
     <Manifest Include="Entrance-Examination.exe.manifest" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Page.h" />
+    <ClInclude Include="Question.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
