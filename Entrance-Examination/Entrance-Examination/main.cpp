@@ -11,12 +11,6 @@ HWND g_main;
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine, int iCmdShow);
 
-int g_ny = 0;
-#define MAX_QUESTIONS 10
-
-int g_nc = 0;
-
-
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPInst, char* line, int show)
 {
@@ -25,7 +19,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPInst, char* line, int show)
 
     WNDCLASSEX wc = { 0 };
     wc.cbSize = sizeof(WNDCLASSEX);
-    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
+    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
     wc.hInstance = hInstance;
@@ -67,6 +61,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         yClient = HIWORD(lParam);
         xClient = LOWORD(lParam);
 
+        mainPage.Resize(hwnd);
+
         si.cbSize = sizeof(si);
         si.fMask = SIF_RANGE | SIF_PAGE;
         si.nMin = 0;
@@ -96,7 +92,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		VscrollPos = max(0, min(VscrollPos, 10 * 300 + 50));
 
         if (VscrollPos != GetScrollPos(hwnd, SB_VERT)) {
-			//mainPage.Scroll(GetScrollPos(hwnd, SB_VERT) - VscrollPos);
             SetScrollPos(hwnd, SB_VERT, VscrollPos, TRUE);
             InvalidateRect(hwnd, NULL, TRUE);
             ScrollWindowEx(g_main, 0, prevpos - VscrollPos, NULL, NULL, NULL, &rc, SW_SCROLLCHILDREN | SW_ERASE | SW_INVALIDATE);
@@ -133,6 +128,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			SendMessage(hwnd, WM_VSCROLL, MAKELONG(wScrollNotify, 0), 0L);
 
 		break;
+    case WM_NOTIFY:
+        switch (((LPNMHDR)lParam)->code)
+        {
+        case EN_REQUESTRESIZE:
+            mainPage.Resize(((REQRESIZE*)lParam)->nmhdr.hwndFrom, ((REQRESIZE*)lParam)->rc.bottom - ((REQRESIZE*)lParam)->rc.top);
+            break;
+        }
+        break;
     case WM_DESTROY:
         PostQuitMessage(0);
         return 0;
