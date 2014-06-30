@@ -10,11 +10,12 @@ class Page
 private:
     Question m_q[max_q];
     std::map<HWND, int> m_sizes;
-    HWND m_submit, m_nextPage;
+    HWND m_submit, m_nextPage, m_prevPage;
     int m_ymax, m_page;
 public:
     HWND GetSubmitHandle() { return m_submit; }
     HWND GetNextPageHandle() { return m_nextPage; }
+    HWND GetPrevPageHandle() { return m_prevPage; }
 
 	Page()
 	{
@@ -32,16 +33,22 @@ public:
 			m_q[i].Initialize(hWnd, i+1);
 
         std::fstream file;
-        file.open("test.fbq", std::ios::in | std::ios::binary);
+        file.open("set21.fbq", std::ios::in | std::ios::binary);
         unsigned int size;
         file.read((char*)&size, sizeof(size));
+        if (size > max_q) size = max_q - 1;
         for (unsigned int i = 0; i < size; ++i)
             m_q[i].LoadFromFile(file);
         file.close();
 
-        m_submit = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"SUBMIT", WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, NULL, (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE), NULL);
-        m_nextPage = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"NEXT PAGE", WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, NULL, (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE), NULL);
+        HINSTANCE hInstance = (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE);
 
+        m_submit = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"SUBMIT", WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
+        m_nextPage = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"NEXT PAGE", WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
+        m_prevPage = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"Previous PAGE", WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
+        
+        
+        CreateWindowEx(WS_EX_TRANSPARENT, L"STATIC", L"IOE ENTRANCE EXAM - 2071", WS_VISIBLE | WS_CHILD | SS_SIMPLE, 450, 20, 500, 80, hWnd, NULL, hInstance, NULL);
 	}
 
     void Resize(HWND hWnd, int height)
@@ -55,27 +62,35 @@ public:
         int endq = startq + 20;
         if (endq > max_q) endq = max_q ;
 
-        int xOffset = 250, yOffset = 50 + yoff;
+        int xOffset = 250, yOffset = 90 + yoff;
         RECT wndRect = { 0 };
         GetClientRect(hWnd, &wndRect);
         int y = yOffset; int dummy;
         for (int i = 0; i < startq; i++)
-            m_q[i].Reposition(-wndRect.right, dummy, 0, m_sizes);
-        for (int i = endq + 1; i < max_q; i++)
-            m_q[i].Reposition(-wndRect.right, dummy, 0, m_sizes);
+            m_q[i].Reposition(-wndRect.right*2, dummy, wndRect.right - 2 * xOffset, m_sizes);
+        for (int i = endq; i < max_q; i++)
+            m_q[i].Reposition(-wndRect.right*2, dummy, wndRect.right - 2 * xOffset, m_sizes);
 
-        for (int i = startq; i != endq; i++)
+        for (int i = startq; i < endq; i++)
             m_q[i].Reposition(xOffset, y, wndRect.right - 2 * xOffset, m_sizes);
 
 
         if (m_page < (max_q / qperpage))
         {
-            MoveWindow(m_nextPage, wndRect.right / 2 - 250 / 2, y, 250, 100, true);
+            if (m_page != 0){
+                MoveWindow(m_nextPage, wndRect.right / 2 + 10, y, 130, 100, true);
+                MoveWindow(m_prevPage, wndRect.right / 2 - 130 - 10, y, 130, 100, true);
+            }
+            else {
+                MoveWindow(m_nextPage, wndRect.right / 2 - 250 / 2, y, 250, 100, true);
+                MoveWindow(m_prevPage, -wndRect.right, 0, 0, 0, true);
+            }
             MoveWindow(m_submit, -wndRect.right, 0, 0, 0, true);
         }
         else
         {
-            MoveWindow(m_submit, wndRect.right / 2 - 250 / 2, y, 250, 100, true);
+            MoveWindow(m_submit, wndRect.right / 2 + 10, y, 130, 100, true);
+            MoveWindow(m_prevPage, wndRect.right / 2 - 130 - 10, y, 130, 100, true);
             MoveWindow(m_nextPage, -wndRect.right, 0, 0, 0, true);
         }
 
@@ -101,5 +116,9 @@ public:
     void NextPage()
     {
         m_page++;
+    }
+    void PreviousPage()
+    {
+        m_page--;
     }
 };

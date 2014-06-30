@@ -130,16 +130,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     case WM_COMMAND:
         if ((HWND)lParam == mainPage.GetSubmitHandle())
             mainPage.Submit();
-        else if ((HWND)lParam == mainPage.GetNextPageHandle())
+        else if ((HWND)lParam == mainPage.GetNextPageHandle() || (HWND)lParam == mainPage.GetPrevPageHandle())
         {
-            mainPage.NextPage(); 
+            if ((HWND)lParam == mainPage.GetNextPageHandle()) mainPage.NextPage(); 
+            else mainPage.PreviousPage();
             
             VscrollPos = 0;
-            SetScrollPos(hwnd, SB_VERT, VscrollPos, TRUE);
-            InvalidateRect(hwnd, NULL, TRUE);
-            ScrollWindowEx(g_main, 0, -VscrollPos, NULL, NULL, NULL, &rc, SW_SCROLLCHILDREN | SW_ERASE | SW_INVALIDATE);
-            UpdateWindow(g_main);
-            mainPage.ResizeControls(g_main, -VscrollPos);
+            SetScrollPos(hwnd, SB_VERT, 0, TRUE);
+
+            mainPage.ResizeControls(g_main, 0);
 
             GetClientRect(g_main, &rc);
             si.cbSize = sizeof(si);
@@ -175,7 +174,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             SetScrollPos(hwnd, SB_VERT, VscrollPos, TRUE);
             InvalidateRect(hwnd, NULL, TRUE);
             ScrollWindowEx(g_main, 0, prevpos - VscrollPos, NULL, NULL, NULL, &rc, SW_SCROLLCHILDREN | SW_ERASE | SW_INVALIDATE);
-            UpdateWindow(g_main);
 		}
 		break;
 	case WM_KEYDOWN:
@@ -215,6 +213,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             mainPage.Resize(((REQRESIZE*)lParam)->nmhdr.hwndFrom, ((REQRESIZE*)lParam)->rc.bottom - ((REQRESIZE*)lParam)->rc.top);
             break;
         }
+        break;
+    case WM_CTLCOLORSTATIC:
+    {
+                              HDC hdcStatic = (HDC)wParam;
+                              SetBkMode(hdcStatic, TRANSPARENT); 
+                              HBRUSH BGColorBrush = (HBRUSH)(COLOR_WINDOW + 1);
+                              return (LRESULT)BGColorBrush;
+    }
         break;
 
     }
