@@ -32,11 +32,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPInst, char* line, int show)
 
 	g_main = CreateWindowEx(0, L"frobi-entranceexam", L"Entrance Examination", WS_OVERLAPPEDWINDOW | WS_VSCROLL, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), 0, 0, hInstance, 0);
 
-	ShowWindow(g_main, SW_SHOWMAXIMIZED);
+	//ShowWindow(g_main, SW_SHOWMAXIMIZED);
 	
 	//Enable to go fullscreen
-	//SetWindowLong(g_main, GWL_STYLE, 0);
-	//ShowWindow(g_main, SW_NORMAL);
+	SetWindowLong(g_main, GWL_STYLE, 0);
+	ShowWindow(g_main, SW_NORMAL);
 
     MSG Msg = { 0 };
     while (GetMessageA(&Msg, 0, 0, 0))
@@ -54,10 +54,17 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     static int VscrollPos = 0, prevpos, xClient, yClient;
     RECT rc;
     SCROLLINFO si;
-
+	static HDC hdcStatic;
     int xoffset = 50, yoffset = 50;
+	static HWND hSubmit = 0;
     switch (msg)
     {
+	case WM_CTLCOLORSTATIC:
+		hdcStatic = (HDC)wParam;
+		SetTextColor(hdcStatic, RGB(0, 0, 0));
+		SetBkMode(hdcStatic, TRANSPARENT);
+		SetBkColor(hdcStatic, RGB(255, 255, 255));
+		return (LRESULT)GetStockObject(NULL_BRUSH);
 	case WM_CREATE:
 		mainPage.Initialize(hwnd);
     case WM_SIZE:
@@ -69,7 +76,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         si.cbSize = sizeof(si);
         si.fMask = SIF_RANGE | SIF_PAGE;
         si.nMin = 0;
-        si.nMax = 10*300 + 50;
+		si.nMax = mainPage.GetTotalHeight() + 50;
         si.nPage = yClient;
         SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
         break;
@@ -92,7 +99,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             break;
         }
 
-		VscrollPos = max(0, min(VscrollPos, 10 * 300 + 50));
+		VscrollPos = max(0, min(VscrollPos, mainPage.GetTotalHeight() + 50));
 
         if (VscrollPos != GetScrollPos(hwnd, SB_VERT)) {
             SetScrollPos(hwnd, SB_VERT, VscrollPos, TRUE);
@@ -136,6 +143,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         {
         case EN_REQUESTRESIZE:
             mainPage.Resize(((REQRESIZE*)lParam)->nmhdr.hwndFrom, ((REQRESIZE*)lParam)->rc.bottom - ((REQRESIZE*)lParam)->rc.top);
+			if (hSubmit == 0)
+			{
+				//hSubmit = CreateWindowEx(WS_EX_TRANSPARENT, L"STATIC", "Submit", WS_VISIBLE | WS_CHILD | SS_SIMPLE, 0, 0, 0, 0, hwnd, NULL, hInstance, NULL);
+			}
             break;
         }
         break;
