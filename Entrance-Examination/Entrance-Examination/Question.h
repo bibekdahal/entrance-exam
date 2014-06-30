@@ -25,7 +25,7 @@ public:
 		RECT wndRect = { 0 };
 		GetClientRect(hWnd, &wndRect);
         
-        m_lbl = CreateWindowEx(0, L"STATIC", ss.str().c_str(), WS_VISIBLE | WS_CHILD | SS_SIMPLE, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
+        m_lbl = CreateWindowEx(WS_EX_TRANSPARENT, L"STATIC", ss.str().c_str(), WS_VISIBLE | WS_CHILD | SS_SIMPLE, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
 
         m_redit = CreateWindowEx(WS_EX_TRANSPARENT, MSFTEDIT_CLASS, L"QUESTION", ES_MULTILINE | WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_READONLY,
             0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
@@ -126,22 +126,22 @@ public:
         y += sz + 10;
 
         sz = max(20, sizes[m_optar]);
-        MoveWindow(m_opta, x + rOff, y, 20, 20, true);
+        MoveWindow(m_opta, x + rOff, y, 14, 20, true);
         MoveWindow(m_optar, x + rOff + 18, y, w - 40 - rOff, sz, true);
 
         y += sz + 10;
         sz = max(20, sizes[m_optbr]);
-        MoveWindow(m_optb, x + rOff, y, 20, 20, true);
+        MoveWindow(m_optb, x + rOff, y, 14, 20, true);
         MoveWindow(m_optbr, x + rOff + 18, y, w - 40 - rOff, sz, true);
 
         y += sz + 10;
         sz = max(20, sizes[m_optcr]);
-        MoveWindow(m_optc, x + rOff, y, 20, 20, true);
+        MoveWindow(m_optc, x + rOff, y, 14, 20, true);
         MoveWindow(m_optcr, x + rOff + 18, y, w - 40 - rOff, sz, true);
 
         y += sz + 10;
         sz = max(20, sizes[m_optdr]);
-        MoveWindow(m_optd, x + rOff, y, 20, 20, true);
+        MoveWindow(m_optd, x + rOff, y, 14, 20, true);
         MoveWindow(m_optdr, x + rOff + 18, y, w - 40 - rOff, sz, true);
         y += sz + 50;
 	}
