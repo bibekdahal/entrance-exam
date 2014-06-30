@@ -117,7 +117,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     HDC hdc;
     PAINTSTRUCT ps;
 	WCHAR szBuffer[200] = { 0 };
-    static int count = 60 * 60 * 3;
+    static int count = 60 * 60;
     int seconds = 0;
     int minutes = 0;
     int hours = 0;
@@ -127,7 +127,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_CREATE:
 		//mainPage.Initialize(hwnd);
 
-
+        mainPage.CreateTitleAndLogo(hwnd);
 		CreateLoginForm(hwnd);
 
 		onScreenKeyboard.Init(hwnd, 300, 500);
