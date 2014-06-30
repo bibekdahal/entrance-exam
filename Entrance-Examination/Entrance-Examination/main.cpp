@@ -69,7 +69,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         si.cbSize = sizeof(si);
         si.fMask = SIF_RANGE | SIF_PAGE;
         si.nMin = 0;
-        si.nMax = 10*300 + 50;
+        si.nMax = mainPage.GetYMax();
         si.nPage = yClient;
         SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
         break;
@@ -92,7 +92,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             break;
         }
 
-		VscrollPos = max(0, min(VscrollPos, 10 * 300 + 50));
+		VscrollPos = max(0, min(VscrollPos, mainPage.GetYMax()));
 
         if (VscrollPos != GetScrollPos(hwnd, SB_VERT)) {
             SetScrollPos(hwnd, SB_VERT, VscrollPos, TRUE);
