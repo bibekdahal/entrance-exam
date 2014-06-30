@@ -2,6 +2,7 @@
 #include <CommCtrl.h>
 #include <Richedit.h>
 #include <stdio.h>
+#include "resource.h"
 
 #include "Page.h"
 #include "Keyboard.h"
@@ -218,6 +219,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		case VK_END:
 			wScrollNotify = SB_BOTTOM;
 			break;
+        case VK_RETURN:
+            Start(mainPage, g_main);
+            break;
 		}
 
 		if (wScrollNotify != -1)

@@ -10,7 +10,7 @@ class Page
 private:
     Question m_q[max_q];
     std::map<HWND, int> m_sizes;
-    HWND m_submit, m_nextPage, m_prevPage, m_title;
+    HWND m_submit, m_nextPage, m_prevPage, m_title, m_logo;
     int m_ymax, m_page;
     bool m_initialized;
 public:
@@ -49,8 +49,14 @@ public:
         m_nextPage = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"NEXT PAGE", WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
         m_prevPage = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"Previous PAGE", WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
         
-        
-        m_title = CreateWindowEx(WS_EX_TRANSPARENT, L"STATIC", L"IOE ENTRANCE EXAM - 2071", WS_VISIBLE | WS_CHILD | SS_SIMPLE, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
+        static HFONT hFont = CreateFont(42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, L"Segoe UI");
+        m_title = CreateWindowEx(0, L"STATIC", L"Computer Based Model Exam", WS_VISIBLE | WS_CHILD | SS_CENTER, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
+        SendMessage(m_title, WM_SETFONT, (WPARAM)hFont, TRUE);
+
+        m_logo = CreateWindowEx(0, L"STATIC", L"", WS_CHILD | WS_VISIBLE | SS_BITMAP, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
+        HBITMAP mybitmap = LoadBitmap(hInstance, MAKEINTRESOURCEW(IDB_LOGO));
+        SendMessage(m_logo, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)mybitmap);
+           
 	}
 
     void Resize(HWND hWnd, int height)
@@ -66,12 +72,13 @@ public:
         int endq = startq + 20;
         if (endq > max_q) endq = max_q ;
 
-        int xOffset = 250, yOffset = 90 + yoff;
+        int xOffset = 250, yOffset = 200 + yoff;
         RECT wndRect = { 0 };
         GetClientRect(hWnd, &wndRect);
         int y = yOffset; int dummy;
 
-        MoveWindow(m_title, 450, 20, 500, 80, true);
+        MoveWindow(m_logo, wndRect.right / 2 - 45, 10, 90, 90, true);
+        MoveWindow(m_title, wndRect.right / 2 - 250, 90 + 15, 500, 80, true);
 
         for (int i = 0; i < startq; i++)
             m_q[i].Reposition(-wndRect.right*2, dummy, wndRect.right - 2 * xOffset, m_sizes);

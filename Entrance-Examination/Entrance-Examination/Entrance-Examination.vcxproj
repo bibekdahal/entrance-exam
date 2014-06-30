@@ -85,7 +85,14 @@
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Page.h" />
     <ClInclude Include="Question.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="User.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Entrance-Examination.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="C:\Users\Bibek\Pictures\tulogo.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
