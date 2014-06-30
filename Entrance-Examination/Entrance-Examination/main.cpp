@@ -47,7 +47,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPInst, char* line, int show)
     return 0;
 }
 
-
+const int ID_TIMER = 10;
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static Page mainPage;
@@ -55,11 +55,52 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     RECT rc;
     SCROLLINFO si;
 
-    int xoffset = 50, yoffset = 50;
+    HDC hdc;
+    PAINTSTRUCT ps;
+    RECT r;
+    WCHAR szBuffer[200];
+    static int count = 5;
+    int seconds = 0;
+    int minutes = 0;
+    int hours = 0;
+    static bool examrunning = true;
+
     switch (msg)
     {
 	case WM_CREATE:
-		mainPage.Initialize(hwnd);
+        mainPage.Initialize(hwnd);
+        SetTimer(hwnd, ID_TIMER, 1000, NULL);
+        break;
+    case WM_PAINT:
+        if (count > 0 && examrunning)
+        {
+            hdc = BeginPaint(hwnd, &ps);
+            GetClientRect(hwnd, &r);
+            r.left = 10;
+            r.right = 170;
+            hours = count / 3600;
+            minutes = (count / 60) % 60;
+            seconds = count % 60;
+            wsprintf(szBuffer, L"Remaining Time:\n%d hrs : %d min : %d sec", hours, minutes, seconds);
+            DrawText(hdc, szBuffer, -1, &r, DT_LEFT);
+            EndPaint(hwnd, &ps);
+        }
+        else if (examrunning)
+        {
+            examrunning = false;
+            MessageBox(g_main, L"Your exam time is over.", L"Thank you!", 0);
+        }
+        break;
+    case WM_TIMER:
+        count--; 
+        GetClientRect(hwnd, &r);
+        r.right = 170;
+        InvalidateRect(hwnd, &r, TRUE);
+        break;
+    case WM_DESTROY:
+        KillTimer(hwnd, ID_TIMER);
+        PostQuitMessage(0);
+        return 0;
     case WM_SIZE:
         yClient = HIWORD(lParam);
         xClient = LOWORD(lParam);
@@ -139,9 +180,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             break;
         }
         break;
-    case WM_DESTROY:
-        PostQuitMessage(0);
-        return 0;
 
     }
     return DefWindowProc(hwnd, msg, wParam, lParam);

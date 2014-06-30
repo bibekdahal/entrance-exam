@@ -34,6 +34,7 @@ public:
         file.close();
 
         m_submit = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"SUBMIT", WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, NULL, (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE), NULL);
+
 	}
 
     void Resize(HWND hWnd, int height)
