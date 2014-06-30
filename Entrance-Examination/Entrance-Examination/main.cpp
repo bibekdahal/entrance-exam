@@ -206,6 +206,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             break;
         }
         break;
+    case WM_CTLCOLORSTATIC:
+    {
+                              HDC hdcStatic = (HDC)wParam;
+                              SetBkMode(hdcStatic, TRANSPARENT); 
+                              HBRUSH BGColorBrush = (HBRUSH)(COLOR_WINDOW + 1);
+                              return (LRESULT)BGColorBrush;
+    }
+        break;
 
     }
     return DefWindowProc(hwnd, msg, wParam, lParam);
