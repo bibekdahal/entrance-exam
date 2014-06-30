@@ -20,9 +20,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Manifest Include="Entrance-Examination.exe.manifest" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="Question.h">
       <Filter>Header Files</Filter>
     </ClInclude>

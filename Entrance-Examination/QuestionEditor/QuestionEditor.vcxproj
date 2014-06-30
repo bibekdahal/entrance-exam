@@ -84,9 +84,6 @@
   <ItemGroup>
     <ResourceCompile Include="QuestionEditor.rc" />
   </ItemGroup>
-  <ItemGroup>
-    <Manifest Include="QuestionEditor.exe.manifest" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
