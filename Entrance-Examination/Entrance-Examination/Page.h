@@ -17,11 +17,29 @@ public:
     HWND GetSubmitHandle() { return m_submit; }
     HWND GetNextPageHandle() { return m_nextPage; }
     HWND GetPrevPageHandle() { return m_prevPage; }
+    HWND GetTitleHandle() { return m_title; }
+    HWND GetLogoHandle() { return m_logo; }
 
     Page() : m_initialized(false)
 	{
 
 	}
+    void CreateTitleAndLogo(HWND hWnd)
+    {
+        HINSTANCE hInstance = (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE);
+        static HFONT hFont = CreateFont(42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, L"Segoe UI");
+        m_title = CreateWindowEx(0, L"STATIC", L"Computer Based Model Exam", WS_VISIBLE | WS_CHILD | SS_CENTER, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
+        SendMessage(m_title, WM_SETFONT, (WPARAM)hFont, TRUE);
+
+        m_logo = CreateWindowEx(0, L"STATIC", L"", WS_CHILD | WS_VISIBLE | SS_BITMAP, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
+        HBITMAP mybitmap = LoadBitmap(hInstance, MAKEINTRESOURCEW(IDB_LOGO));
+        SendMessage(m_logo, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)mybitmap);
+
+        RECT wndRect = { 0 };
+        GetClientRect(hWnd, &wndRect);
+        MoveWindow(m_logo, wndRect.right / 2 - 45, 10, 90, 90, true);
+        MoveWindow(m_title, wndRect.right / 2 - 250, 90 + 15, 500, 80, true);
+    }
 	void Initialize(HWND hWnd)
 	{
         m_page = 0;
@@ -48,15 +66,7 @@ public:
         m_submit = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"SUBMIT", WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
         m_nextPage = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"NEXT PAGE", WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
         m_prevPage = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"Previous PAGE", WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
-        
-        static HFONT hFont = CreateFont(42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, L"Segoe UI");
-        m_title = CreateWindowEx(0, L"STATIC", L"Computer Based Model Exam", WS_VISIBLE | WS_CHILD | SS_CENTER, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
-        SendMessage(m_title, WM_SETFONT, (WPARAM)hFont, TRUE);
-
-        m_logo = CreateWindowEx(0, L"STATIC", L"", WS_CHILD | WS_VISIBLE | SS_BITMAP, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
-        HBITMAP mybitmap = LoadBitmap(hInstance, MAKEINTRESOURCEW(IDB_LOGO));
-        SendMessage(m_logo, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)mybitmap);
-           
+         
 	}
 
     void Resize(HWND hWnd, int height)

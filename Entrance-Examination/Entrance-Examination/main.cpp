@@ -61,7 +61,7 @@ HWND lastFocus = 0;
 
 void CreateLoginForm(HWND hWnd)
 {
-	int x = 400, y = 100;
+	int x = 400, y = 200;
 	static HFONT hFont = CreateFont(24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, L"Segoe UI");
 	HINSTANCE hInst = (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE);
 	HWND hLblUN = CreateWindowEx(WS_EX_TRANSPARENT, L"STATIC", L"Username:", WS_VISIBLE | WS_CHILD | SS_SIMPLE,
@@ -111,7 +111,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     HDC hdc;
     PAINTSTRUCT ps;
 	WCHAR szBuffer[200] = { 0 };
-    static int count = 60 * 60 * 3;
+    static int count = 60 * 60;
     int seconds = 0;
     int minutes = 0;
     int hours = 0;
@@ -121,7 +121,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_CREATE:
 		//mainPage.Initialize(hwnd);
 
-
+        mainPage.CreateTitleAndLogo(hwnd);
 		CreateLoginForm(hwnd);
 
 		onScreenKeyboard.Init(hwnd, 300, 500);
