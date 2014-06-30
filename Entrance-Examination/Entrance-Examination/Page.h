@@ -32,9 +32,10 @@ public:
 			m_q[i].Initialize(hWnd, i+1);
 
         std::fstream file;
-        file.open("test.fbq", std::ios::in | std::ios::binary);
+        file.open("set21.fbq", std::ios::in | std::ios::binary);
         unsigned int size;
         file.read((char*)&size, sizeof(size));
+        if (size > max_q) size = max_q - 1;
         for (unsigned int i = 0; i < size; ++i)
             m_q[i].LoadFromFile(file);
         file.close();
@@ -64,7 +65,7 @@ public:
         for (int i = endq + 1; i < max_q; i++)
             m_q[i].Reposition(-wndRect.right, dummy, 0, m_sizes);
 
-        for (int i = startq; i != endq; i++)
+        for (int i = startq; i < endq; i++)
             m_q[i].Reposition(xOffset, y, wndRect.right - 2 * xOffset, m_sizes);
 
 
