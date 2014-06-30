@@ -87,8 +87,8 @@ public:
         GetClientRect(hWnd, &wndRect);
         int y = yOffset; int dummy;
 
-        MoveWindow(m_logo, wndRect.right / 2 - 45, 10, 90, 90, true);
-        MoveWindow(m_title, wndRect.right / 2 - 250, 90 + 15, 500, 80, true);
+        MoveWindow(m_logo, wndRect.right / 2 - 45, 10 + yoff, 90, 90, true);
+        MoveWindow(m_title, wndRect.right / 2 - 250, 90 + 15 + yoff, 500, 80, true);
 
         for (int i = 0; i < startq; i++)
             m_q[i].Reposition(-wndRect.right*2, dummy, wndRect.right - 2 * xOffset, m_sizes);

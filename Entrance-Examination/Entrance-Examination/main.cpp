@@ -145,7 +145,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             hours = count / 3600;
             minutes = (count / 60) % 60;
             seconds = count % 60;
-            wsprintf(szBuffer, L"Remaining Time:\n%d hrs : %d min : %d sec", hours, minutes, seconds);
+            wsprintf(szBuffer, L"Remaining Time:\n%02d hrs : %02d min : %02d sec", hours, minutes, seconds);
             DrawText(hdc, szBuffer, -1, &rc, DT_LEFT);
             EndPaint(hwnd, &ps);
         }
