@@ -30,7 +30,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPInst, char* line, int show)
     if (!RegisterClassEx(&wc))
         FatalAppExitA(0, "Couldn't register window class!");
 
-	g_main = CreateWindowEx(0, L"frobi-entranceexam", L"Entrance Examination", WS_OVERLAPPEDWINDOW | WS_VSCROLL, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), 0, 0, hInstance, 0);
+    g_main = CreateWindowEx(0, L"frobi-entranceexam", L"Entrance Examination", WS_OVERLAPPEDWINDOW | WS_VSCROLL, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), 0, 0, hInstance, 0);
 
     // Two calls are made so that:
     // after first call, the rich edit controls are created and initialized with text, and
@@ -109,7 +109,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         yClient = HIWORD(lParam);
         xClient = LOWORD(lParam);
 
-        mainPage.Resize(hwnd);
+        mainPage.ResizeControls(hwnd, -VscrollPos);
 
         si.cbSize = sizeof(si);
         si.fMask = SIF_RANGE | SIF_PAGE;
@@ -122,6 +122,25 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     case WM_COMMAND:
         if ((HWND)lParam == mainPage.GetSubmitHandle())
             mainPage.Submit();
+        else if ((HWND)lParam == mainPage.GetNextPageHandle())
+        {
+            mainPage.NextPage(); 
+            
+            VscrollPos = 0;
+            SetScrollPos(hwnd, SB_VERT, VscrollPos, TRUE);
+            InvalidateRect(hwnd, NULL, TRUE);
+            ScrollWindowEx(g_main, 0, -VscrollPos, NULL, NULL, NULL, &rc, SW_SCROLLCHILDREN | SW_ERASE | SW_INVALIDATE);
+            UpdateWindow(g_main);
+            mainPage.ResizeControls(g_main, -VscrollPos);
+
+            GetClientRect(g_main, &rc);
+            si.cbSize = sizeof(si);
+            si.fMask = SIF_RANGE | SIF_PAGE;
+            si.nMin = 0;
+            si.nMax = mainPage.GetYMax();
+            si.nPage = rc.bottom - rc.top;
+            SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
+        }
         break;
     case WM_VSCROLL:
         GetClientRect(g_main, &rc);
