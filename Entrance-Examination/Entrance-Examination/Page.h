@@ -10,20 +10,22 @@ class Page
 private:
     Question m_q[max_q];
     std::map<HWND, int> m_sizes;
-    HWND m_submit, m_nextPage, m_prevPage;
+    HWND m_submit, m_nextPage, m_prevPage, m_title;
     int m_ymax, m_page;
+    bool m_initialized;
 public:
     HWND GetSubmitHandle() { return m_submit; }
     HWND GetNextPageHandle() { return m_nextPage; }
     HWND GetPrevPageHandle() { return m_prevPage; }
 
-	Page()
+    Page() : m_initialized(false)
 	{
 
 	}
 	void Initialize(HWND hWnd)
 	{
         m_page = 0;
+        m_initialized = true;
 
 		int xOffset = 250, yOffset = 50;
 		RECT wndRect = { 0 };
@@ -48,7 +50,7 @@ public:
         m_prevPage = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"Previous PAGE", WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
         
         
-        CreateWindowEx(WS_EX_TRANSPARENT, L"STATIC", L"IOE ENTRANCE EXAM - 2071", WS_VISIBLE | WS_CHILD | SS_SIMPLE, 450, 20, 500, 80, hWnd, NULL, hInstance, NULL);
+        m_title = CreateWindowEx(WS_EX_TRANSPARENT, L"STATIC", L"IOE ENTRANCE EXAM - 2071", WS_VISIBLE | WS_CHILD | SS_SIMPLE, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
 	}
 
     void Resize(HWND hWnd, int height)
@@ -58,6 +60,8 @@ public:
 
     void ResizeControls(HWND hWnd, int yoff)
     {
+        if (!m_initialized) return;
+
         int startq = m_page * 20;
         int endq = startq + 20;
         if (endq > max_q) endq = max_q ;
@@ -66,6 +70,9 @@ public:
         RECT wndRect = { 0 };
         GetClientRect(hWnd, &wndRect);
         int y = yOffset; int dummy;
+
+        MoveWindow(m_title, 450, 20, 500, 80, true);
+
         for (int i = 0; i < startq; i++)
             m_q[i].Reposition(-wndRect.right*2, dummy, wndRect.right - 2 * xOffset, m_sizes);
         for (int i = endq; i < max_q; i++)

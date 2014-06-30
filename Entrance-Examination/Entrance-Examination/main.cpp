@@ -54,7 +54,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPInst, char* line, int show)
     return 0;
 }
 
+
 const int ID_TIMER = 10;
+bool examrunning = false;
+void Start(Page & mainPage, HWND hwnd)
+{
+    examrunning = true;
+    mainPage.Initialize(hwnd);
+    mainPage.ResizeControls(hwnd, 0);
+    RECT rc;
+    SCROLLINFO si;
+    GetClientRect(hwnd, &rc);
+    si.cbSize = sizeof(si);
+    si.fMask = SIF_RANGE | SIF_PAGE;
+    si.nMin = 0;
+    si.nMax = mainPage.GetYMax();
+    si.nPage = rc.bottom - rc.top;
+    SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
+    SetTimer(hwnd, ID_TIMER, 1000, NULL); 
+    InvalidateRect(hwnd, NULL, TRUE);
+    UpdateWindow(hwnd);
+}
+
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static Page mainPage;
@@ -71,15 +92,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     int seconds = 0;
     int minutes = 0;
     int hours = 0;
-    static bool examrunning = true;
 
     switch (msg)
     {
 	case WM_CREATE:
-        //mainPage.Initialize(hwnd);
-
-        SetTimer(hwnd, ID_TIMER, 1000, NULL);
-        break;
+        //Start(mainPage, hwnd);
+        //break;
     case WM_PAINT:
         if (count > 0 && examrunning)
         {
