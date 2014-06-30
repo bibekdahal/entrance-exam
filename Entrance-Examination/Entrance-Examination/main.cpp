@@ -57,7 +57,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
     HDC hdc;
     PAINTSTRUCT ps;
-    RECT r;
     WCHAR szBuffer[200];
     static int count = 5;
     int seconds = 0;
@@ -75,14 +74,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         if (count > 0 && examrunning)
         {
             hdc = BeginPaint(hwnd, &ps);
-            GetClientRect(hwnd, &r);
-            r.left = 10;
-            r.right = 170;
+            GetClientRect(hwnd, &rc);
+            rc.left = 10;
+            rc.right = 170;
             hours = count / 3600;
             minutes = (count / 60) % 60;
             seconds = count % 60;
             wsprintf(szBuffer, L"Remaining Time:\n%d hrs : %d min : %d sec", hours, minutes, seconds);
-            DrawText(hdc, szBuffer, -1, &r, DT_LEFT);
+            DrawText(hdc, szBuffer, -1, &rc, DT_LEFT);
             EndPaint(hwnd, &ps);
         }
         else if (examrunning)
@@ -93,9 +92,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         break;
     case WM_TIMER:
         count--; 
-        GetClientRect(hwnd, &r);
-        r.right = 170;
-        InvalidateRect(hwnd, &r, TRUE);
+        GetClientRect(hwnd, &rc);
+        rc.right = 170;
+        InvalidateRect(hwnd, &rc, TRUE);
         break;
     case WM_DESTROY:
         KillTimer(hwnd, ID_TIMER);
