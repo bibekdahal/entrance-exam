@@ -27,7 +27,7 @@ public:
         
         m_lbl = CreateWindowEx(WS_EX_TRANSPARENT, L"STATIC", ss.str().c_str(), WS_VISIBLE | WS_CHILD | SS_SIMPLE, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
 
-        m_redit = CreateWindowEx(WS_EX_TRANSPARENT, MSFTEDIT_CLASS, L"", ES_MULTILINE | WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_READONLY,
+        m_redit = CreateWindowEx(WS_EX_TRANSPARENT, MSFTEDIT_CLASS, L"QUESTION", ES_MULTILINE | WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_READONLY,
             0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
         SendMessage(m_redit, EM_SETEVENTMASK, 0, ENM_REQUESTRESIZE);
 
@@ -55,6 +55,22 @@ public:
             0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
         SendMessage(m_optdr, EM_SETEVENTMASK, 0, ENM_REQUESTRESIZE);
 	}
+
+    bool GetCheck(HWND radio)
+    {
+        if (SendMessage(radio, BM_GETCHECK, 0, 0) == BST_CHECKED) return true;
+        return false;
+    }
+    char GetAnswer()
+    {
+        char ans = -1;
+        if (GetCheck(m_opta)) ans = 0;
+        else if (GetCheck(m_optb)) ans = 1;
+        else if (GetCheck(m_optc)) ans = 2;
+        else if (GetCheck(m_optd)) ans = 3;
+        return ans;
+    }
+
 
     void LoadFromFile(std::fstream &file)
     {

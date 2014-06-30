@@ -113,9 +113,19 @@ void Add()
     Clear();
 }
 
+void ChangeFontSize(int rtb, int size)
+{
+    int ss, sl;
+    SendDlgItemMessage(g_hdlg, rtb, EM_GETSEL, (WPARAM)&ss, (LPARAM)&sl);
+    SendDlgItemMessage(g_hdlg, rtb, EM_SETSEL, 0, -1);
+    SendDlgItemMessage(g_hdlg, rtb, EM_SETFONTSIZE, size, 0);
+    SendDlgItemMessage(g_hdlg, rtb, EM_SETSEL, ss, sl);
+}
+
 void Changed()
 {
     if (g_updating) return;
+
     Question &q = g_questions[g_index];
     q.q = GetRTF(IDC_RICHEDIT21);
     q.oa = GetRTF(IDC_RICHEDIT22);
@@ -251,8 +261,14 @@ void SmartPaste()
     Select(IDC_RICHEDIT21, id + 4, nid);
     SetRTF(IDC_RICHEDIT25, GetSelectedRtf(IDC_RICHEDIT21));
 
-
     SetRTF(IDC_RICHEDIT21, q);
+
+
+    ChangeFontSize(IDC_RICHEDIT21, 2);
+    ChangeFontSize(IDC_RICHEDIT22, 2);
+    ChangeFontSize(IDC_RICHEDIT23, 2);
+    ChangeFontSize(IDC_RICHEDIT24, 2);
+    ChangeFontSize(IDC_RICHEDIT25, 2);
 }
 
 BOOL CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -326,6 +342,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPInst, char* line, int show)
     SendDlgItemMessage(g_hdlg, IDC_RICHEDIT25, EM_SETEVENTMASK, 0, ENM_CHANGE);
 
     ShowWindow(g_hdlg, show);
+    CHARFORMAT cf = { 0 };
+    cf.cbSize = sizeof(CHARFORMAT);
+    cf.dwMask = CFM_SIZE;
+    cf.yHeight = 20*11;
+    SendDlgItemMessage(g_hdlg, IDC_RICHEDIT21, EM_SETCHARFORMAT, SCF_DEFAULT, (LPARAM)&cf);
+    SendDlgItemMessage(g_hdlg, IDC_RICHEDIT22, EM_SETCHARFORMAT, SCF_DEFAULT, (LPARAM)&cf);
+    SendDlgItemMessage(g_hdlg, IDC_RICHEDIT23, EM_SETCHARFORMAT, SCF_DEFAULT, (LPARAM)&cf);
+    SendDlgItemMessage(g_hdlg, IDC_RICHEDIT24, EM_SETCHARFORMAT, SCF_DEFAULT, (LPARAM)&cf);
+    SendDlgItemMessage(g_hdlg, IDC_RICHEDIT25, EM_SETCHARFORMAT, SCF_DEFAULT, (LPARAM)&cf);
+
     Add();
 
     BOOL ret;
