@@ -54,6 +54,29 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPInst, char* line, int show)
     return 0;
 }
 
+HWND hEditUN = 0;
+
+HWND lastFocus = 0;
+
+void CreateLoginForm(HWND hWnd)
+{
+	int x = 400, y = 100;
+	static HFONT hFont = CreateFont(24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, L"Segoe UI");
+	HINSTANCE hInst = (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE);
+	HWND hLblUN = CreateWindowEx(WS_EX_TRANSPARENT, L"STATIC", L"Username:", WS_VISIBLE | WS_CHILD | SS_SIMPLE,
+		x, y, 100, 30, hWnd, NULL, hInst, NULL);
+	hEditUN = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", NULL, WS_VISIBLE | WS_CHILD | ES_AUTOHSCROLL,
+		x + 110, y - 4, 300, 30, hWnd, NULL, hInst, NULL);
+	HWND hLblPW = CreateWindowEx(WS_EX_TRANSPARENT, L"STATIC", L"Password:", WS_VISIBLE | WS_CHILD | SS_SIMPLE,
+		x, y + 100, 100, 160, hWnd, NULL, hInst, NULL);
+	HWND hEditPW = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", NULL, WS_VISIBLE | WS_CHILD | ES_AUTOHSCROLL,
+		x + 110, y + 100 - 4, 300, 30, hWnd, NULL, hInst, NULL);
+	SendMessage(hLblUN, WM_SETFONT, (WPARAM)hFont, TRUE);
+	SendMessage(hEditUN, WM_SETFONT, (WPARAM)hFont, TRUE);
+	SendMessage(hLblPW, WM_SETFONT, (WPARAM)hFont, TRUE);
+	SendMessage(hEditPW, WM_SETFONT, (WPARAM)hFont, TRUE);
+}
+
 const int ID_TIMER = 10;
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -66,7 +89,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
     HDC hdc;
     PAINTSTRUCT ps;
-    WCHAR szBuffer[200];
+	WCHAR szBuffer[200] = { 0 };
     static int count = 60 * 60 * 3;
     int seconds = 0;
     int minutes = 0;
@@ -76,10 +99,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     switch (msg)
     {
 	case WM_CREATE:
-        //mainPage.Initialize(hwnd);
+		//mainPage.Initialize(hwnd);
 
-        SetTimer(hwnd, ID_TIMER, 1000, NULL);
-        break;
+
+		CreateLoginForm(hwnd);
+
+		onScreenKeyboard.Init(hwnd, 300, 500);
+		//SetTimer(hwnd, ID_TIMER, 1000, NULL);
+		break;
     case WM_PAINT:
         if (count > 0 && examrunning)
         {
@@ -92,8 +119,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             hours = count / 3600;
             minutes = (count / 60) % 60;
             seconds = count % 60;
-            wsprintf(szBuffer, L"Remaining Time:\n%d hrs : %d min : %d sec", hours, minutes, seconds);
-            DrawText(hdc, szBuffer, -1, &rc, DT_LEFT);
+            //wsprintf(szBuffer, L"Remaining Time:\n%d hrs : %d min : %d sec", hours, minutes, seconds);
+            //DrawText(hdc, szBuffer, -1, &rc, DT_LEFT);
             EndPaint(hwnd, &ps);
         }
         else if (examrunning)
@@ -122,7 +149,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         si.cbSize = sizeof(si);
         si.fMask = SIF_RANGE | SIF_PAGE;
         si.nMin = 0;
-        si.nMax = mainPage.GetYMax();
+        //si.nMax = mainPage.GetYMax();
+		si.nMax = 0;
         si.nPage = yClient;
         SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
         break;
@@ -148,6 +176,28 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             si.nPage = rc.bottom - rc.top;
             SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
         }
+		else if (!user.LoggedIn())
+		{
+			//SetFocus(hEditUN);
+			char ch = onScreenKeyboard.Check((HWND)lParam);
+			if (ch != -1)
+			{
+				//INPUT ip;
+				//ip.type = INPUT_KEYBOARD;
+				//ip.ki.wScan = 0;
+				//ip.ki.time = 0;
+				//ip.ki.dwExtraInfo = 0;
+				//
+				//ip.ki.wVk = ch;
+				//ip.ki.dwFlags = 0;
+				//SendInput(1, &ip, sizeof(INPUT));
+				////Sleep(20);
+				//ip.ki.dwFlags = KEYEVENTF_KEYUP;
+				//SendInput(1, &ip, sizeof(INPUT));
+				SetFocus(hEditUN);
+			}
+			
+		}
         break;
     case WM_VSCROLL:
         GetClientRect(g_main, &rc);

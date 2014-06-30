@@ -4,9 +4,9 @@
 
 const char g_keys[] = {
 	'1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
-	'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p',
-	'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',
-	'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/'
+	'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P',
+	'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ';',
+	'Z', 'X', 'C', 'V', 'B', 'N', 'M', ',', '.', '/'
 };
 
 const int g_maxKeys = sizeof(g_keys);
@@ -30,10 +30,34 @@ public:
 		bl[0] = m_value;
 		MultiByteToWideChar(CP_ACP, 0, bl, -1, bttnLabel, 2);
 		hKey = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", bttnLabel, WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, NULL, (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE), NULL);
+		static HFONT hFont = CreateFont(24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, L"Segoe UI");
+		SendMessage(hKey, WM_SETFONT, (WPARAM)hFont, TRUE);
 	}
 	void Move(int x, int y)
 	{
 		MoveWindow(hKey, x, y, g_bw, g_bh, TRUE);
+	}
+	bool Check(HWND hTest)
+	{
+		if (hKey == hTest)
+		{
+			
+			INPUT ip;
+			ip.type = INPUT_KEYBOARD;
+			ip.ki.wScan = 0;
+			ip.ki.time = 0;
+			ip.ki.dwExtraInfo = 0;
+
+			ip.ki.wVk = m_value;
+			ip.ki.dwFlags = 0;	
+			SendInput(1, &ip, sizeof(INPUT));
+
+			ip.ki.dwFlags = KEYEVENTF_KEYUP;
+			SendInput(1, &ip, sizeof(INPUT));
+			//MessageBox(0, L"fuck yeh", 0, 0);
+			return true;
+		}
+		return false;
 	}
 };
 
@@ -61,5 +85,12 @@ public:
 			}
 		}
 	}
-
+	char Check(HWND hTest)
+	{
+		for (int i = 0; i < g_maxKeys; i++)
+		{
+			if (m_keys[i].Check(hTest)) return g_keys[i];
+		}
+		return -1;
+	}
 };
