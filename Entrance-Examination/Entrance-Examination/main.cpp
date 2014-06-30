@@ -56,26 +56,32 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPInst, char* line, int show)
 }
 
 HWND hEditUN = 0;
-
 HWND lastFocus = 0;
+HWND hLblUN = 0;
+HWND hLblPW = 0;
+HWND hEditPW = 0;
+HWND hLoginSubmitBttn = 0;
 
 void CreateLoginForm(HWND hWnd)
 {
-	int x = 400, y = 100;
+	int x = 400, y = 200;
 	static HFONT hFont = CreateFont(24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, L"Segoe UI");
 	HINSTANCE hInst = (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE);
-	HWND hLblUN = CreateWindowEx(WS_EX_TRANSPARENT, L"STATIC", L"Username:", WS_VISIBLE | WS_CHILD | SS_SIMPLE,
+	hLblUN = CreateWindowEx(WS_EX_TRANSPARENT, L"STATIC", L"Username:", WS_VISIBLE | WS_CHILD | SS_SIMPLE,
 		x, y, 100, 30, hWnd, NULL, hInst, NULL);
 	hEditUN = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", NULL, WS_VISIBLE | WS_CHILD | ES_AUTOHSCROLL,
 		x + 110, y - 4, 300, 30, hWnd, NULL, hInst, NULL);
-	HWND hLblPW = CreateWindowEx(WS_EX_TRANSPARENT, L"STATIC", L"Password:", WS_VISIBLE | WS_CHILD | SS_SIMPLE,
+	hLblPW = CreateWindowEx(WS_EX_TRANSPARENT, L"STATIC", L"Password:", WS_VISIBLE | WS_CHILD | SS_SIMPLE,
 		x, y + 100, 100, 160, hWnd, NULL, hInst, NULL);
-	HWND hEditPW = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", NULL, WS_VISIBLE | WS_CHILD | ES_AUTOHSCROLL,
+	hEditPW = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", NULL, WS_VISIBLE | WS_CHILD | ES_AUTOHSCROLL,
 		x + 110, y + 100 - 4, 300, 30, hWnd, NULL, hInst, NULL);
+	hLoginSubmitBttn = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"Login", WS_VISIBLE | WS_CHILD, 
+		x + 400 - 95, y + 180, 100, 30, hWnd, NULL, (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE), NULL);
 	SendMessage(hLblUN, WM_SETFONT, (WPARAM)hFont, TRUE);
 	SendMessage(hEditUN, WM_SETFONT, (WPARAM)hFont, TRUE);
 	SendMessage(hLblPW, WM_SETFONT, (WPARAM)hFont, TRUE);
 	SendMessage(hEditPW, WM_SETFONT, (WPARAM)hFont, TRUE);
+	SendMessage(hLoginSubmitBttn, WM_SETFONT, (WPARAM)hFont, TRUE);
 }
 
 const int ID_TIMER = 10;

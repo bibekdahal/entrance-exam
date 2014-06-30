@@ -59,6 +59,10 @@ public:
 		}
 		return false;
 	}
+	void CleanUp()
+	{
+		DestroyWindow(hKey);
+	}
 };
 
 
@@ -92,5 +96,12 @@ public:
 			if (m_keys[i].Check(hTest)) return g_keys[i];
 		}
 		return -1;
+	}
+	void CleanUp()
+	{
+		for (int i = 0; i < g_maxKeys; i++)
+		{
+			m_keys[i].CleanUp();
+		}
 	}
 };
