@@ -75,6 +75,10 @@ void Update()
 {
     g_updating = true;
 
+    WCHAR str[10];
+    wsprintf(str, L"s.n. %d", g_index + 1);
+    SetDlgItemText(g_hdlg, IDC_QN, str);
+
     SetRTF(IDC_RICHEDIT21, g_questions[g_index].q);
     SetRTF(IDC_RICHEDIT22, g_questions[g_index].oa);
     SetRTF(IDC_RICHEDIT23, g_questions[g_index].ob);
