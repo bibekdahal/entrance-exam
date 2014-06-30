@@ -2,6 +2,7 @@
 #include <CommCtrl.h>
 #include <Richedit.h>
 #include <stdio.h>
+#include "resource.h"
 
 #include "Page.h"
 #include "Keyboard.h"
@@ -78,6 +79,26 @@ void CreateLoginForm(HWND hWnd)
 }
 
 const int ID_TIMER = 10;
+bool examrunning = false;
+void Start(Page & mainPage, HWND hwnd)
+{
+    examrunning = true;
+    mainPage.Initialize(hwnd);
+    mainPage.ResizeControls(hwnd, 0);
+    RECT rc;
+    SCROLLINFO si;
+    GetClientRect(hwnd, &rc);
+    si.cbSize = sizeof(si);
+    si.fMask = SIF_RANGE | SIF_PAGE;
+    si.nMin = 0;
+    si.nMax = mainPage.GetYMax();
+    si.nPage = rc.bottom - rc.top;
+    SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
+    SetTimer(hwnd, ID_TIMER, 1000, NULL); 
+    InvalidateRect(hwnd, NULL, TRUE);
+    UpdateWindow(hwnd);
+}
+
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static Page mainPage;
@@ -94,7 +115,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     int seconds = 0;
     int minutes = 0;
     int hours = 0;
-    static bool examrunning = true;
 
     switch (msg)
     {
@@ -119,8 +139,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             hours = count / 3600;
             minutes = (count / 60) % 60;
             seconds = count % 60;
-            //wsprintf(szBuffer, L"Remaining Time:\n%d hrs : %d min : %d sec", hours, minutes, seconds);
-            //DrawText(hdc, szBuffer, -1, &rc, DT_LEFT);
+            wsprintf(szBuffer, L"Remaining Time:\n%d hrs : %d min : %d sec", hours, minutes, seconds);
+            DrawText(hdc, szBuffer, -1, &rc, DT_LEFT);
             EndPaint(hwnd, &ps);
         }
         else if (examrunning)
@@ -149,8 +169,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         si.cbSize = sizeof(si);
         si.fMask = SIF_RANGE | SIF_PAGE;
         si.nMin = 0;
-        //si.nMax = mainPage.GetYMax();
-		si.nMax = 0;
+        si.nMax = mainPage.GetYMax();
         si.nPage = yClient;
         SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
         break;
@@ -250,6 +269,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		case VK_END:
 			wScrollNotify = SB_BOTTOM;
 			break;
+        case VK_RETURN:
+            Start(mainPage, g_main);
+            break;
 		}
 
 		if (wScrollNotify != -1)

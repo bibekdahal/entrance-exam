@@ -12,6 +12,7 @@ using namespace std;
 
 HWND g_main;
 #pragma comment( lib, "comctl32.lib" )
+#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' " "version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 HWND g_hdlg;
 
@@ -73,6 +74,10 @@ bool g_updating = false;
 void Update()
 {
     g_updating = true;
+
+    WCHAR str[10];
+    wsprintf(str, L"s.n. %d", g_index + 1);
+    SetDlgItemText(g_hdlg, IDC_QN, str);
 
     SetRTF(IDC_RICHEDIT21, g_questions[g_index].q);
     SetRTF(IDC_RICHEDIT22, g_questions[g_index].oa);
