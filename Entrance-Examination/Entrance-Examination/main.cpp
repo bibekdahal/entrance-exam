@@ -2,11 +2,14 @@
 #include <CommCtrl.h>
 #include <Richedit.h>
 #include <stdio.h>
+#include <fstream>
+#include <sstream>
+#include <map>
 #include "resource.h"
 
+#include "User.h"
 #include "Page.h"
 #include "Keyboard.h"
-#include "User.h"
 
 HWND g_main;
 #pragma comment( lib, "comctl32.lib" )
@@ -153,7 +156,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         {
             examrunning = false;
             MessageBox(g_main, L"Your exam time is over.", L"Thank you!", 0);
-            mainPage.Submit();
+            mainPage.Submit(user);
         }
         break;
     case WM_TIMER:
@@ -182,7 +185,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
     case WM_COMMAND:
         if ((HWND)lParam == mainPage.GetSubmitHandle())
-            mainPage.Submit();
+            mainPage.Submit(user);
         else if ((HWND)lParam == mainPage.GetNextPageHandle() || (HWND)lParam == mainPage.GetPrevPageHandle())
         {
             if ((HWND)lParam == mainPage.GetNextPageHandle()) mainPage.NextPage(); 

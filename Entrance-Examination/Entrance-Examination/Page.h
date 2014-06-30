@@ -122,11 +122,16 @@ public:
     }
     int GetYMax() { return m_ymax; }
 
-    void Submit()
+    void Submit(User &user)
     {
+        std::stringstream ss("");
+        ss << "answers" << user.UserName() << ".fba";
         std::fstream file;
-        file.open("answers.fba", std::ios::out | std::ios::binary);
-        unsigned int size = max_q;
+        file.open(ss.str(), std::ios::out | std::ios::binary);
+        unsigned int size = user.UserName().size();
+        file.write((char*)&size, sizeof(size));
+        file.write(user.UserName().c_str(), size);
+        size = max_q;
         file.write((char*)&size, sizeof(size));
         for (unsigned int i = 0; i < size; ++i)
         {

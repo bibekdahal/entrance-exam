@@ -1,12 +1,5 @@
 #pragma once
 
-#include <Windows.h>
-#include <CommCtrl.h>
-#include <Richedit.h>
-#include <fstream>
-#include <sstream>
-#include <map>
-
 class Question
 {
 private:

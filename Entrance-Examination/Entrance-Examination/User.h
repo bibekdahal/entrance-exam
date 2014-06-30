@@ -1,10 +1,5 @@
 #pragma once
 
-#include <iostream>
-#include <fstream>
-#include <string>
-#include "Page.h"
-
 const int g_maxQ = 65;
 
 
@@ -30,4 +25,6 @@ public:
 		m_pass = password;
 		return true;
 	}
+
+    std::string UserName() { return m_username; }
 };
