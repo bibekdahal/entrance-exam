@@ -84,6 +84,7 @@
   <ItemGroup>
     <ClInclude Include="Page.h" />
     <ClInclude Include="Question.h" />
+    <ClInclude Include="User.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
