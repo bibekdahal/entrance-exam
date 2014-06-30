@@ -12,6 +12,8 @@ private:
     HWND m_submit;
     int m_ymax;
 public:
+    HWND GetSubmitHandle() { return m_submit; }
+
 	Page()
 	{
 
@@ -56,4 +58,19 @@ public:
         m_ymax = y + 150;
     }
     int GetYMax() { return m_ymax; }
+
+    void Submit()
+    {
+        std::fstream file;
+        file.open("answers.fba", std::ios::out | std::ios::binary);
+        unsigned int size = max_q;
+        file.write((char*)&size, sizeof(size));
+        for (unsigned int i = 0; i < size; ++i)
+        {
+            char ans = m_q[i].GetAnswer();
+            file.write(&ans, sizeof(ans));
+        }
+        file.close();
+        MessageBox(0, L"Your answers are submitted.", L"Thank you!", 0);
+    }
 };

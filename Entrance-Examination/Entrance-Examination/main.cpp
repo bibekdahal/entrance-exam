@@ -32,8 +32,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPInst, char* line, int show)
 
 	g_main = CreateWindowEx(0, L"frobi-entranceexam", L"Entrance Examination", WS_OVERLAPPEDWINDOW | WS_VSCROLL, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), 0, 0, hInstance, 0);
 
-	ShowWindow(g_main, SW_SHOWMAXIMIZED);
-	
+    // Two calls are made so that:
+    // after first call, the rich edit controls are created and initialized with text, and
+    // after second call, a Request-Resize message is sent to each rich edit control and controls are resized according to their contents
+	ShowWindow(g_main, SW_NORMAL);
+    ShowWindow(g_main, SW_MAXIMIZE);
+
 	//Enable to go fullscreen
 	//SetWindowLong(g_main, GWL_STYLE, 0);
 	//ShowWindow(g_main, SW_NORMAL);
@@ -58,7 +62,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     HDC hdc;
     PAINTSTRUCT ps;
     WCHAR szBuffer[200];
-    static int count = 5;
+    static int count = 60 * 60 * 3;
     int seconds = 0;
     int minutes = 0;
     int hours = 0;
@@ -88,6 +92,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         {
             examrunning = false;
             MessageBox(g_main, L"Your exam time is over.", L"Thank you!", 0);
+            mainPage.Submit();
         }
         break;
     case WM_TIMER:
@@ -112,6 +117,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         si.nMax = mainPage.GetYMax();
         si.nPage = yClient;
         SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
+        break;
+
+    case WM_COMMAND:
+        if ((HWND)lParam == mainPage.GetSubmitHandle())
+            mainPage.Submit();
         break;
     case WM_VSCROLL:
         GetClientRect(g_main, &rc);

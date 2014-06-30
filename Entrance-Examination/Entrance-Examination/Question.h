@@ -56,6 +56,22 @@ public:
         SendMessage(m_optdr, EM_SETEVENTMASK, 0, ENM_REQUESTRESIZE);
 	}
 
+    bool GetCheck(HWND radio)
+    {
+        if (SendMessage(radio, BM_GETCHECK, 0, 0) == BST_CHECKED) return true;
+        return false;
+    }
+    char GetAnswer()
+    {
+        char ans = -1;
+        if (GetCheck(m_opta)) ans = 0;
+        else if (GetCheck(m_optb)) ans = 1;
+        else if (GetCheck(m_optc)) ans = 2;
+        else if (GetCheck(m_optd)) ans = 3;
+        return ans;
+    }
+
+
     void LoadFromFile(std::fstream &file)
     {
         for (int j = 0; j < 5; ++j)
