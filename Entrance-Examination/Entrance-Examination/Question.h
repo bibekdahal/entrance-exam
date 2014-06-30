@@ -18,6 +18,7 @@ public:
 	}
 	void Initialize(HWND hWnd, int qn)
 	{
+		static HFONT hFont = CreateFont(18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, L"Segoe UI");
         std::wstringstream ss(L"");
         ss << qn << L". ";
 
@@ -26,6 +27,7 @@ public:
 		GetClientRect(hWnd, &wndRect);
         
         m_lbl = CreateWindowEx(WS_EX_TRANSPARENT, L"STATIC", ss.str().c_str(), WS_VISIBLE | WS_CHILD | SS_SIMPLE, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
+		SendMessage(m_lbl, WM_SETFONT, (WPARAM)hFont, TRUE);
 
         m_redit = CreateWindowEx(WS_EX_TRANSPARENT, MSFTEDIT_CLASS, L"QUESTION", ES_MULTILINE | WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_READONLY,
             0, 0, 0, 0, hWnd, NULL, hInstance, NULL);

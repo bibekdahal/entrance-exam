@@ -4,9 +4,12 @@
 #include <stdio.h>
 
 #include "Page.h"
+#include "Keyboard.h"
+#include "User.h"
 
 HWND g_main;
 #pragma comment( lib, "comctl32.lib" )
+#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' " "version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine, int iCmdShow);
@@ -55,6 +58,8 @@ const int ID_TIMER = 10;
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static Page mainPage;
+	static User user;
+	static Keyboard onScreenKeyboard;
     static int VscrollPos = 0, prevpos, xClient, yClient;
     RECT rc;
     SCROLLINFO si;
@@ -71,13 +76,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     switch (msg)
     {
 	case WM_CREATE:
-        mainPage.Initialize(hwnd);
+        //mainPage.Initialize(hwnd);
+
         SetTimer(hwnd, ID_TIMER, 1000, NULL);
         break;
     case WM_PAINT:
         if (count > 0 && examrunning)
         {
             hdc = BeginPaint(hwnd, &ps);
+			static HFONT hFont = CreateFont(18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, L"Segoe UI");
+			SelectObject(hdc, hFont);
             GetClientRect(hwnd, &rc);
             rc.left = 10;
             rc.right = 170;

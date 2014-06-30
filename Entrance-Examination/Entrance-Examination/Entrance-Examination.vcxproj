@@ -82,6 +82,7 @@
     <Manifest Include="Entrance-Examination.exe.manifest" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Page.h" />
     <ClInclude Include="Question.h" />
     <ClInclude Include="User.h" />
