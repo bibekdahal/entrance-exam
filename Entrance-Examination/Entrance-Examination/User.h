@@ -15,6 +15,7 @@ private:
 	std::string m_username;
 	std::string m_pass;
 	bool m_isLoggedIn;
+	//bool m_completed = true;
 public:
 	User()
 	{
@@ -29,5 +30,9 @@ public:
 		m_username = username;
 		m_pass = password;
 		return true;
+	}
+	char* GetName()
+	{
+		return (char*)m_username.c_str();
 	}
 };

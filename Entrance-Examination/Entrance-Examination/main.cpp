@@ -40,11 +40,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPInst, char* line, int show)
     // after first call, the rich edit controls are created and initialized with text, and
     // after second call, a Request-Resize message is sent to each rich edit control and controls are resized according to their contents
 	ShowWindow(g_main, SW_NORMAL);
-    ShowWindow(g_main, SW_MAXIMIZE);
+    //ShowWindow(g_main, SW_MAXIMIZE);
 
 	//Enable to go fullscreen
-	//SetWindowLong(g_main, GWL_STYLE, 0);
-	//ShowWindow(g_main, SW_NORMAL);
+	SetWindowLong(g_main, GWL_STYLE, 0);
+	ShowWindow(g_main, SW_NORMAL);
 
     MSG Msg = { 0 };
     while (GetMessageA(&Msg, 0, 0, 0))
@@ -64,7 +64,7 @@ HWND hLoginSubmitBttn = 0;
 
 void CreateLoginForm(HWND hWnd)
 {
-	int x = 400, y = 200;
+	int x = 465, y = 200;
 	static HFONT hFont = CreateFont(24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, L"Segoe UI");
 	HINSTANCE hInst = (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE);
 	hLblUN = CreateWindowEx(WS_EX_TRANSPARENT, L"STATIC", L"Username:", WS_VISIBLE | WS_CHILD | SS_SIMPLE,
@@ -82,6 +82,16 @@ void CreateLoginForm(HWND hWnd)
 	SendMessage(hLblPW, WM_SETFONT, (WPARAM)hFont, TRUE);
 	SendMessage(hEditPW, WM_SETFONT, (WPARAM)hFont, TRUE);
 	SendMessage(hLoginSubmitBttn, WM_SETFONT, (WPARAM)hFont, TRUE);
+	SetFocus(hEditUN);
+}
+
+void RemoveLoginForm()
+{
+	DestroyWindow(hLblUN);
+	DestroyWindow(hLblPW);
+	DestroyWindow(hEditUN);
+	DestroyWindow(hEditPW);
+	DestroyWindow(hLoginSubmitBttn);
 }
 
 const int ID_TIMER = 10;
@@ -126,27 +136,36 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {
 	case WM_CREATE:
 		//mainPage.Initialize(hwnd);
-
         mainPage.CreateTitleAndLogo(hwnd);
 		CreateLoginForm(hwnd);
-
-		onScreenKeyboard.Init(hwnd, 300, 500);
+		onScreenKeyboard.Init(hwnd, 350, 500);
 		//SetTimer(hwnd, ID_TIMER, 1000, NULL);
 		break;
     case WM_PAINT:
         if (count > 0 && examrunning)
         {
             hdc = BeginPaint(hwnd, &ps);
-			static HFONT hFont = CreateFont(18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, L"Segoe UI");
+			static HFONT hFont = CreateFont(20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, L"Segoe UI");
 			SelectObject(hdc, hFont);
             GetClientRect(hwnd, &rc);
-            rc.left = 10;
-            rc.right = 170;
+            rc.left = 30;
+            rc.right = 300;
+			rc.top = 30;
             hours = count / 3600;
             minutes = (count / 60) % 60;
             seconds = count % 60;
-            wsprintf(szBuffer, L"Remaining Time:\n%d hrs : %d min : %d sec", hours, minutes, seconds);
+			wchar_t fbuff[256] = { 0 };
+			MultiByteToWideChar(CP_ACP, 0, user.GetName(), -1, fbuff, sizeof(fbuff));
+			HBRUSH hBR = CreateSolidBrush(RGB(230, 230, 230));
+			RECT rcf = { 0, 0, 200, GetSystemMetrics(SM_CYSCREEN) };
+			FillRect(hdc, &rcf, hBR);
+			rcf.left = GetSystemMetrics(SM_CXSCREEN) - 200;
+			rcf.right = GetSystemMetrics(SM_CXSCREEN);
+			FillRect(hdc, &rcf, hBR);
+			SetBkMode(hdc, TRANSPARENT);
+            wsprintf(szBuffer, L"Remaining Time:\n%2d min : %2d sec\nUsername: %s\nQuestion Solved: %2d/65", minutes, seconds, fbuff, mainPage.GetNoOfSolvedQuestions());
             DrawText(hdc, szBuffer, -1, &rc, DT_LEFT);
+			
             EndPaint(hwnd, &ps);
         }
         else if (examrunning)
@@ -179,10 +198,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         si.nPage = yClient;
         SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
         break;
-
     case WM_COMMAND:
-        if ((HWND)lParam == mainPage.GetSubmitHandle())
-            mainPage.Submit();
+		if ((HWND)lParam == mainPage.GetSubmitHandle())
+		{
+			if (IDYES == MessageBox(hwnd, L"Are you sure you want to submit?\n\rOnce submitted, you can't change your answers", L"Confirm", MB_YESNO | MB_ICONINFORMATION));
+			mainPage.Submit();
+		}
         else if ((HWND)lParam == mainPage.GetNextPageHandle() || (HWND)lParam == mainPage.GetPrevPageHandle())
         {
             if ((HWND)lParam == mainPage.GetNextPageHandle()) mainPage.NextPage(); 
@@ -207,21 +228,32 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			char ch = onScreenKeyboard.Check((HWND)lParam);
 			if (ch != -1)
 			{
-				//INPUT ip;
-				//ip.type = INPUT_KEYBOARD;
-				//ip.ki.wScan = 0;
-				//ip.ki.time = 0;
-				//ip.ki.dwExtraInfo = 0;
-				//
-				//ip.ki.wVk = ch;
-				//ip.ki.dwFlags = 0;
-				//SendInput(1, &ip, sizeof(INPUT));
-				////Sleep(20);
-				//ip.ki.dwFlags = KEYEVENTF_KEYUP;
-				//SendInput(1, &ip, sizeof(INPUT));
-				SetFocus(hEditUN);
+				SetFocus(lastFocus);
 			}
-			
+			if ((HWND)lParam == hEditPW)
+			{
+				lastFocus = hEditPW;
+			}
+			else if ((HWND)lParam == hEditUN)
+			{
+				lastFocus = hEditUN;
+			}
+			if ((HWND)lParam == hLoginSubmitBttn)
+			{
+				wchar_t wbuffUN[256] = { 0 };
+				wchar_t wbuffPW[256] = { 0 };
+				char buffUN[256] = { 0 };
+				char buffPW[256] = { 0 };
+				GetWindowText(hEditUN, wbuffUN, sizeof(wbuffUN));
+				GetWindowText(hEditUN, wbuffPW, sizeof(wbuffPW));
+				WideCharToMultiByte(CP_ACP, 0, wbuffUN, -1, buffUN, sizeof(buffUN), 0, FALSE);
+				if (user.LogIn(buffUN, buffPW))
+				{
+					RemoveLoginForm();
+					onScreenKeyboard.CleanUp();
+					Start(mainPage, g_main);
+				}
+			}
 		}
         break;
     case WM_VSCROLL:
@@ -276,7 +308,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			wScrollNotify = SB_BOTTOM;
 			break;
         case VK_RETURN:
-            Start(mainPage, g_main);
+			/*RemoveLoginForm();
+			onScreenKeyboard.CleanUp();
+			user.LogIn("Ankit", "ksdfso");
+            Start(mainPage, g_main);*/
             break;
 		}
 
