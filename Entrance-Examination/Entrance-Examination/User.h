@@ -13,6 +13,7 @@ private:
 public:
 	User()
 	{
+        m_username = "test_user";
 		m_isLoggedIn = false;
 	}
 	bool LoggedIn()

@@ -127,7 +127,9 @@ public:
         std::stringstream ss("");
         ss << "answers" << user.UserName() << ".fba";
         std::fstream file;
-        file.open(ss.str(), std::ios::out | std::ios::binary);
+        file.open(ss.str().c_str(), std::ios::out | std::ios::binary);
+        int setid = 21;
+        file.write((char*)&setid, sizeof(setid));
         unsigned int size = user.UserName().size();
         file.write((char*)&size, sizeof(size));
         file.write(user.UserName().c_str(), size);
