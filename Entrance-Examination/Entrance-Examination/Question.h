@@ -51,6 +51,20 @@ public:
         SendMessage(m_optdr, EM_SETEVENTMASK, 0, ENM_REQUESTRESIZE);
 	}
 
+    void Destroy()
+    {
+        DestroyWindow(m_redit);
+        DestroyWindow(m_lbl);
+        DestroyWindow(m_opta);
+        DestroyWindow(m_optb);
+        DestroyWindow(m_optc);
+        DestroyWindow(m_optd);
+        DestroyWindow(m_optar);
+        DestroyWindow(m_optbr);
+        DestroyWindow(m_optcr);
+        DestroyWindow(m_optdr);
+    }
+
     bool GetCheck(HWND radio)
     {
         if (SendMessage(radio, BM_GETCHECK, 0, 0) == BST_CHECKED) return true;

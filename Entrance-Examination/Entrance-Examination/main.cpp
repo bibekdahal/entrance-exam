@@ -154,7 +154,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         }
         else if (examrunning)
         {
-            examrunning = false;
             MessageBox(g_main, L"Your exam time is over.", L"Thank you!", 0);
             mainPage.Submit(user);
         }
@@ -185,7 +184,22 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
     case WM_COMMAND:
         if ((HWND)lParam == mainPage.GetSubmitHandle())
+        {
+
+            VscrollPos = 0;
+            SetScrollPos(hwnd, SB_VERT, 0, TRUE);
+            mainPage.ResizeControls(g_main, 0);
             mainPage.Submit(user);
+            GetClientRect(g_main, &rc);
+            si.cbSize = sizeof(si);
+            si.fMask = SIF_RANGE | SIF_PAGE;
+            si.nMin = 0;
+            si.nMax = rc.bottom - rc.top;
+            si.nPage = rc.bottom - rc.top;
+            SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
+
+            examrunning = false;
+        }
         else if ((HWND)lParam == mainPage.GetNextPageHandle() || (HWND)lParam == mainPage.GetPrevPageHandle())
         {
             if ((HWND)lParam == mainPage.GetNextPageHandle()) mainPage.NextPage(); 

@@ -64,7 +64,7 @@ public:
         HINSTANCE hInstance = (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE);
 
         m_submit = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"SUBMIT", WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
-        m_nextPage = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"NEXT PAGE", WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
+        m_nextPage = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"Next Page", WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
         m_prevPage = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"Previous PAGE", WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
          
 	}
@@ -88,7 +88,7 @@ public:
         int y = yOffset; int dummy;
 
         MoveWindow(m_logo, wndRect.right / 2 - 45, 10 + yoff, 90, 90, true);
-        MoveWindow(m_title, wndRect.right / 2 - 250, 90 + 15 + yoff, 500, 80, true);
+        MoveWindow(m_title, wndRect.right / 2 - 250, 90 + 15 + yoff, 500, 180, true);
 
         for (int i = 0; i < startq; i++)
             m_q[i].Reposition(-wndRect.right*2, dummy, wndRect.right - 2 * xOffset, m_sizes);
@@ -141,7 +141,16 @@ public:
             file.write(&ans, sizeof(ans));
         }
         file.close();
-        MessageBox(0, L"Your answers are submitted.", L"Thank you!", 0);
+        //MessageBox(0, L"Your answers are submitted.", L"Thank you!", 0);
+
+        m_initialized = false;
+        for (unsigned int i = 0; i < max_q; ++i)
+            m_q[i].Destroy();
+
+        SetWindowText(m_title, L"Computer Based Model Exam\n\nYour answers are submitted.");
+        DestroyWindow(m_submit);
+        DestroyWindow(m_nextPage);
+        DestroyWindow(m_prevPage);
     }
 
     void NextPage()

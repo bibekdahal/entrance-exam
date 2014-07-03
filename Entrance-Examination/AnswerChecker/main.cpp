@@ -20,7 +20,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPInst, char* line, int show)
 
     WNDCLASSEX wc = { 0 };
     wc.cbSize = sizeof(WNDCLASSEX);
-    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW);
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
     wc.hInstance = hInstance;
@@ -63,6 +63,7 @@ void LoadFromFile(TCHAR * filename)
     afile.close();
 
     int correctanswers = 0;
+    int incorrectanswers = 0;
 
     unsigned int size;
     file.read((char*)&size, sizeof(size));
@@ -76,10 +77,12 @@ void LoadFromFile(TCHAR * filename)
         char ans;
         file.read(&ans, sizeof(ans));
         if (ans == cans[i] - 'a') correctanswers++;
+        else if (ans != -1) incorrectanswers++;
     }
     file.close();
 
-    g_text << "\t\tCorrect Answers: " << correctanswers << "\n\n";
+    g_text << "\t\tCorrect Answers: " << correctanswers << "\n";
+    g_text << "\t\tIncorrect Answers: " << incorrectanswers << "\n\n";
     SetWindowText(g_static, g_text.str().c_str());
 }
 
