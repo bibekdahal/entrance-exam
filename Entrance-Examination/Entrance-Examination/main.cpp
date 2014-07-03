@@ -2,11 +2,15 @@
 #include <CommCtrl.h>
 #include <Richedit.h>
 #include <stdio.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <map>
 #include "resource.h"
 
+#include "User.h"
 #include "Page.h"
 #include "Keyboard.h"
-#include "User.h"
 
 HWND g_main;
 #pragma comment( lib, "comctl32.lib" )
@@ -14,6 +18,70 @@ HWND g_main;
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine, int iCmdShow);
+
+char GetRandChar()
+{
+	char rch = 'a' + rand() % 26;
+	return rch;
+}
+
+std::string GetRandomString()
+{
+	char rstr[16] = { 0 };
+	for (int i = 0; i < 8; i++)
+	{
+		rstr[i] = GetRandChar();
+	}
+	return std::string(rstr);
+}
+
+class UserStream
+{
+public:
+	static int idCounter;
+	std::string id;
+	std::string pw;
+	UserStream()
+	{
+		char buff[10] = { 0 };
+		itoa(++idCounter, buff, 10);
+		id = std::string(buff);
+		pw = GetRandomString();
+	}
+	void WriteOP(std::ofstream& formatted, std::ofstream& encrypted)
+	{
+		std::string eid = id, epw = pw;
+		for (int i = 0; i < 8; i++)
+		{
+			epw[i] = epw[i] + 100;
+		}
+		for (int i = 0; i < 4; i++)
+		{
+			eid[i] = eid[i] + 100;
+		}
+		encrypted.write(eid.c_str(), 4);
+		encrypted.write(epw.c_str(), 8);
+		formatted << "Userid: " << id << std::endl;
+		formatted << "Password: " << pw << std::endl;
+	}
+};
+
+int UserStream::idCounter = 1200;
+
+void BuildPass()
+{
+	std::ofstream of, off;
+	of.open("uli.dat");
+	off.open("unpw.txt");
+	for (int i = 0; i < 300; i++)
+	{
+		UserStream us;
+		us.WriteOP(off, of);
+		off << std::endl;
+	}
+	of.close();
+	off.close();
+}
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPInst, char* line, int show)
@@ -34,7 +102,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPInst, char* line, int show)
     if (!RegisterClassEx(&wc))
         FatalAppExitA(0, "Couldn't register window class!");
 
-    g_main = CreateWindowEx(0, L"frobi-entranceexam", L"Entrance Examination", WS_OVERLAPPEDWINDOW | WS_VSCROLL, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), 0, 0, hInstance, 0);
+    g_main = CreateWindowEx(0, L"frobi-entranceexam", L"Entrance Examination", WS_OVERLAPPEDWINDOW | WS_VSCROLL, 
+		0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), 0, 0, hInstance, 0);
 
     // Two calls are made so that:
     // after first call, the rich edit controls are created and initialized with text, and
@@ -55,8 +124,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPInst, char* line, int show)
     return 0;
 }
 
+HWND hEditName = 0;
 HWND hEditUN = 0;
 HWND lastFocus = 0;
+HWND hLblName = 0;
 HWND hLblUN = 0;
 HWND hLblPW = 0;
 HWND hEditPW = 0;
@@ -64,29 +135,39 @@ HWND hLoginSubmitBttn = 0;
 
 void CreateLoginForm(HWND hWnd)
 {
-	int x = 465, y = 200;
+	int w = GetSystemMetrics(SM_CXSCREEN);
+	int h = GetSystemMetrics(SM_CYSCREEN);
+	int x = w/2 - 210, y = 220;
 	static HFONT hFont = CreateFont(24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, L"Segoe UI");
 	HINSTANCE hInst = (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE);
-	hLblUN = CreateWindowEx(WS_EX_TRANSPARENT, L"STATIC", L"Username:", WS_VISIBLE | WS_CHILD | SS_SIMPLE,
-		x, y, 100, 30, hWnd, NULL, hInst, NULL);
+	hLblName = CreateWindowEx(WS_EX_TRANSPARENT, L"STATIC", L"Name:", WS_VISIBLE | WS_CHILD | SS_SIMPLE,
+		x, y, 110, 30, hWnd, NULL, hInst, NULL);
+	hEditName = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", NULL, WS_VISIBLE | WS_CHILD | ES_AUTOHSCROLL,
+		x + 120, y - 4, 300, 30, hWnd, NULL, hInst, NULL);
+	hLblUN = CreateWindowEx(WS_EX_TRANSPARENT, L"STATIC", L"Exam Roll No:", WS_VISIBLE | WS_CHILD | SS_SIMPLE,
+		x, y + 60, 110, 30, hWnd, NULL, hInst, NULL);
 	hEditUN = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", NULL, WS_VISIBLE | WS_CHILD | ES_AUTOHSCROLL,
-		x + 110, y - 4, 300, 30, hWnd, NULL, hInst, NULL);
+		x + 120, y + 60 - 4, 300, 30, hWnd, NULL, hInst, NULL);
 	hLblPW = CreateWindowEx(WS_EX_TRANSPARENT, L"STATIC", L"Password:", WS_VISIBLE | WS_CHILD | SS_SIMPLE,
-		x, y + 100, 100, 160, hWnd, NULL, hInst, NULL);
+		x, y + 120, 110, 160, hWnd, NULL, hInst, NULL);
 	hEditPW = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", NULL, WS_VISIBLE | WS_CHILD | ES_AUTOHSCROLL,
-		x + 110, y + 100 - 4, 300, 30, hWnd, NULL, hInst, NULL);
+		x + 120, y + 120 - 4, 300, 30, hWnd, NULL, hInst, NULL);
 	hLoginSubmitBttn = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"Login", WS_VISIBLE | WS_CHILD, 
-		x + 400 - 95, y + 180, 100, 30, hWnd, NULL, (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE), NULL);
+		x + 420 - 100, y + 180, 100, 30, hWnd, NULL, (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE), NULL);
+	SendMessage(hLblName, WM_SETFONT, (WPARAM)hFont, TRUE);
+	SendMessage(hEditName, WM_SETFONT, (WPARAM)hFont, TRUE);
 	SendMessage(hLblUN, WM_SETFONT, (WPARAM)hFont, TRUE);
 	SendMessage(hEditUN, WM_SETFONT, (WPARAM)hFont, TRUE);
 	SendMessage(hLblPW, WM_SETFONT, (WPARAM)hFont, TRUE);
 	SendMessage(hEditPW, WM_SETFONT, (WPARAM)hFont, TRUE);
 	SendMessage(hLoginSubmitBttn, WM_SETFONT, (WPARAM)hFont, TRUE);
-	SetFocus(hEditUN);
+	SetFocus(hEditName);
 }
 
 void RemoveLoginForm()
 {
+	DestroyWindow(hLblName);
+	DestroyWindow(hEditName);
 	DestroyWindow(hLblUN);
 	DestroyWindow(hLblPW);
 	DestroyWindow(hEditUN);
@@ -138,7 +219,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		//mainPage.Initialize(hwnd);
         mainPage.CreateTitleAndLogo(hwnd);
 		CreateLoginForm(hwnd);
-		onScreenKeyboard.Init(hwnd, 350, 500);
+		onScreenKeyboard.Init(hwnd, GetSystemMetrics(SM_CXSCREEN) / 2 - 10 * (g_bw + g_bhm) / 2, GetSystemMetrics(SM_CYSCREEN)-4*(g_bh+g_bvm)-20);
 		//SetTimer(hwnd, ID_TIMER, 1000, NULL);
 		break;
     case WM_PAINT:
@@ -155,7 +236,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             minutes = (count / 60) % 60;
             seconds = count % 60;
 			wchar_t fbuff[256] = { 0 };
-			MultiByteToWideChar(CP_ACP, 0, user.GetName(), -1, fbuff, sizeof(fbuff));
+			MultiByteToWideChar(CP_ACP, 0, user.UserName().c_str(), -1, fbuff, sizeof(fbuff));
 			HBRUSH hBR = CreateSolidBrush(RGB(230, 230, 230));
 			RECT rcf = { 0, 0, 200, GetSystemMetrics(SM_CYSCREEN) };
 			FillRect(hdc, &rcf, hBR);
@@ -163,7 +244,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			rcf.right = GetSystemMetrics(SM_CXSCREEN);
 			FillRect(hdc, &rcf, hBR);
 			SetBkMode(hdc, TRANSPARENT);
-            wsprintf(szBuffer, L"Remaining Time:\n%2d min : %2d sec\nUsername: %s\nQuestion Solved: %2d/65", minutes, seconds, fbuff, mainPage.GetNoOfSolvedQuestions());
+            wsprintf(szBuffer, L"Remaining Time:\n%2d min : %2d sec\nExam Roll No.: %s\nQuestion Solved: %2d/65", minutes, seconds, fbuff, mainPage.GetNoOfSolvedQuestions());
             DrawText(hdc, szBuffer, -1, &rc, DT_LEFT);
 			
             EndPaint(hwnd, &ps);
@@ -172,7 +253,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         {
             examrunning = false;
             MessageBox(g_main, L"Your exam time is over.", L"Thank you!", 0);
-            mainPage.Submit();
+            mainPage.Submit(user);
         }
         break;
     case WM_TIMER:
@@ -199,10 +280,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
         break;
     case WM_COMMAND:
-		if ((HWND)lParam == mainPage.GetSubmitHandle())
+        if ((HWND)lParam == mainPage.GetSubmitHandle())
 		{
-			if (IDYES == MessageBox(hwnd, L"Are you sure you want to submit?\n\rOnce submitted, you can't change your answers", L"Confirm", MB_YESNO | MB_ICONINFORMATION));
-			mainPage.Submit();
+			if (IDYES == MessageBox(hwnd, L"Are you sure you want to submit?\n\rOnce submitted, you can't change your answers", L"Confirm", MB_YESNO | MB_ICONINFORMATION))
+				mainPage.Submit(user);
 		}
         else if ((HWND)lParam == mainPage.GetNextPageHandle() || (HWND)lParam == mainPage.GetPrevPageHandle())
         {
@@ -229,6 +310,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			if (ch != -1)
 			{
 				SetFocus(lastFocus);
+				
 			}
 			if ((HWND)lParam == hEditPW)
 			{
@@ -238,20 +320,71 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			{
 				lastFocus = hEditUN;
 			}
+			else if ((HWND)lParam == hEditName)
+			{
+				lastFocus = hEditName;
+			}
 			if ((HWND)lParam == hLoginSubmitBttn)
 			{
 				wchar_t wbuffUN[256] = { 0 };
 				wchar_t wbuffPW[256] = { 0 };
+				wchar_t wbuffName[256] = { 0 };
 				char buffUN[256] = { 0 };
 				char buffPW[256] = { 0 };
+				char buffName[256] = { 0 };
 				GetWindowText(hEditUN, wbuffUN, sizeof(wbuffUN));
-				GetWindowText(hEditUN, wbuffPW, sizeof(wbuffPW));
+				GetWindowText(hEditPW, wbuffPW, sizeof(wbuffPW));
+				GetWindowText(hEditName, wbuffName, sizeof(wbuffName));
 				WideCharToMultiByte(CP_ACP, 0, wbuffUN, -1, buffUN, sizeof(buffUN), 0, FALSE);
-				if (user.LogIn(buffUN, buffPW))
+				WideCharToMultiByte(CP_ACP, 0, wbuffPW, -1, buffPW, sizeof(buffPW), 0, FALSE);
+				WideCharToMultiByte(CP_ACP, 0, wbuffName, -1, buffName, sizeof(buffName), 0, FALSE);
+				if (buffName[0] == 0)
 				{
-					RemoveLoginForm();
-					onScreenKeyboard.CleanUp();
-					Start(mainPage, g_main);
+					MessageBox(hwnd, L"Enter your name", L"Form Incomplete", MB_OK | MB_ICONINFORMATION);
+					SetFocus(hEditName);
+					break;
+				}
+				if (buffUN[0] == 0)
+				{
+					MessageBox(hwnd, L"Enter your Exam Roll Number\n\r(1201 - 1500)", L"Form Incomplete", MB_OK | MB_ICONINFORMATION);
+					SetFocus(hEditUN);
+					break;
+				}
+				else
+				{
+
+					int ern = atoi(buffUN);
+					if (ern < 1201 && ern < 1500)
+					{
+						MessageBox(hwnd, L"The Exam Roll Number is not valid\n\rYour Roll Number should be in the range of 1201 to 1500", L"Invalid Data",
+							MB_OK | MB_ICONINFORMATION);
+						SetFocus(hEditUN);
+						break;
+					}
+				}
+				if (buffPW[0] == 0)
+				{
+					MessageBox(hwnd, L"Enter your password", L"Form Incomplete", MB_OK | MB_ICONINFORMATION);
+					SetFocus(hEditPW);
+					break;
+				}
+				try
+				{
+
+					if (user.LogIn(buffName, buffUN, buffPW))
+					{
+						RemoveLoginForm();
+						onScreenKeyboard.CleanUp();
+						Start(mainPage, g_main);
+					}
+					else
+					{
+						MessageBox(hwnd, L"Your Exam Roll No. and password did not match", L"Error Logging in", MB_OK | MB_ICONERROR);
+						break;
+					}
+				}
+				catch (...)
+				{
 				}
 			}
 		}

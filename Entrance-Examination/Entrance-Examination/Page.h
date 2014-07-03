@@ -12,6 +12,7 @@ private:
     std::map<HWND, int> m_sizes;
     HWND m_submit, m_nextPage, m_prevPage, m_title, m_logo;
     int m_ymax, m_page;
+	int m_xOffset, m_yOffset;
     bool m_initialized;
 public:
     HWND GetSubmitHandle() { return m_submit; }
@@ -22,7 +23,11 @@ public:
 
     Page() : m_initialized(false)
 	{
-
+		int w = GetSystemMetrics(SM_CXSCREEN);
+		int h = GetSystemMetrics(SM_CYSCREEN);
+		int tox = h*4.0f / 3.0f;
+		m_xOffset = tox / 2;
+		m_yOffset = 200;
 	}
     void CreateTitleAndLogo(HWND hWnd)
     {
@@ -45,7 +50,7 @@ public:
         m_page = 0;
         m_initialized = true;
 
-		int xOffset = 250, yOffset = 50;
+		int xOffset = m_xOffset, yOffset = m_yOffset;
 		RECT wndRect = { 0 };
 		GetClientRect(hWnd, &wndRect);
         int y = yOffset;
@@ -90,8 +95,8 @@ public:
         GetClientRect(hWnd, &wndRect);
         int y = yOffset; int dummy;
 
-        MoveWindow(m_logo, wndRect.right / 2 - 45, 10, 90, 90, true);
-        MoveWindow(m_title, wndRect.right / 2 - 250, 90 + 15, 500, 80, true);
+        MoveWindow(m_logo, wndRect.right / 2 - 45, 10 + yoff, 90, 90, true);
+        MoveWindow(m_title, wndRect.right / 2 - 250, 90 + 15 + yoff, 500, 80, true);
 
         for (int i = 0; i < startq; i++)
             m_q[i].Reposition(-wndRect.right*2, dummy, wndRect.right - 2 * xOffset, m_sizes);
@@ -134,11 +139,16 @@ public:
 		return count;
 	}
 
-    void Submit()
+    void Submit(User &user)
     {
+        std::stringstream ss("");
+        ss << "answers" << user.UserName() << ".fba";
         std::fstream file;
-        file.open("answers.fba", std::ios::out | std::ios::binary);
-        unsigned int size = max_q;
+        file.open(ss.str(), std::ios::out | std::ios::binary);
+        unsigned int size = user.UserName().size();
+        file.write((char*)&size, sizeof(size));
+        file.write(user.UserName().c_str(), size);
+        size = max_q;
         file.write((char*)&size, sizeof(size));
         for (unsigned int i = 0; i < size; ++i)
         {
