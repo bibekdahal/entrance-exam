@@ -118,8 +118,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPInst, char* line, int show)
     MSG Msg = { 0 };
     while (GetMessageA(&Msg, 0, 0, 0))
     {
-        TranslateMessage(&Msg);
-        DispatchMessageA(&Msg);
+        if (!IsDialogMessage(g_main, &Msg))
+        {
+            TranslateMessage(&Msg);
+            DispatchMessageA(&Msg);
+        }
     }
     return 0;
 }

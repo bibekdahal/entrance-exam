@@ -70,6 +70,7 @@ public:
 		if (!loginData.Find(username, password)) return false;
 		m_username = username;
 		m_pass = password;
+        m_name = name;
 		return true;
 	}
 

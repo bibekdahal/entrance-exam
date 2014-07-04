@@ -14,6 +14,7 @@ private:
     int m_ymax, m_page;
 	int m_xOffset, m_yOffset;
     bool m_initialized;
+    int m_setid;
 public:
     HWND GetSubmitHandle() { return m_submit; }
     HWND GetNextPageHandle() { return m_nextPage; }
@@ -28,6 +29,7 @@ public:
 		int tox = int(h*4.0f / 3.0f);
 		m_xOffset = tox / 2;
 		m_yOffset = 200;
+        m_setid = 22;
 	}
     void CreateTitleAndLogo(HWND hWnd)
     {
@@ -58,7 +60,8 @@ public:
 			m_q[i].Initialize(hWnd, i+1);
 
         std::fstream file;
-        file.open("set21.fbq", std::ios::in | std::ios::binary);
+        std::stringstream ss(""); ss << "set" << m_setid << ".fbq";
+        file.open(ss.str().c_str(), std::ios::in | std::ios::binary);
         unsigned int size;
         file.read((char*)&size, sizeof(size));
         if (size > max_q) size = max_q - 1;
@@ -145,8 +148,7 @@ public:
         ss << "answers" << user.UserName() << ".fba";
         std::fstream file;
         file.open(ss.str().c_str(), std::ios::out | std::ios::binary);
-        int setid = 21;
-        file.write((char*)&setid, sizeof(setid));
+        file.write((char*)&m_setid, sizeof(m_setid));
         unsigned int size = user.UserName().size();
         file.write((char*)&size, sizeof(size));
         file.write(user.UserName().c_str(), size);
