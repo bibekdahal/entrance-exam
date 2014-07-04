@@ -29,7 +29,6 @@ public:
 		int tox = int(h*4.0f / 3.0f);
 		m_xOffset = tox / 2;
 		m_yOffset = 200;
-        m_setid = 22;
 	}
     void CreateTitleAndLogo(HWND hWnd)
     {
@@ -47,11 +46,13 @@ public:
         MoveWindow(m_logo, wndRect.right / 2 - 45, 10, 90, 90, true);
         MoveWindow(m_title, wndRect.right / 2 - 250, 90 + 15, 500, 80, true);
     }
-	void Initialize(HWND hWnd)
-	{
+	void Initialize(HWND hWnd, char * roll)
+    {
+        int rn = atoi(roll) - 1201;
+        m_setid = 21 + rn / 45;
+
         m_page = 0;
         m_initialized = true;
-
 		int xOffset = m_xOffset, yOffset = m_yOffset;
 		RECT wndRect = { 0 };
 		GetClientRect(hWnd, &wndRect);
