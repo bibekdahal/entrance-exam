@@ -12,6 +12,7 @@ private:
     std::map<HWND, int> m_sizes;
     HWND m_submit, m_nextPage, m_prevPage, m_title, m_logo;
     int m_ymax, m_page;
+	int m_xOffset, m_yOffset;
     bool m_initialized;
 public:
     HWND GetSubmitHandle() { return m_submit; }
@@ -22,7 +23,11 @@ public:
 
     Page() : m_initialized(false)
 	{
-
+		int w = GetSystemMetrics(SM_CXSCREEN);
+		int h = GetSystemMetrics(SM_CYSCREEN);
+		int tox = h*4.0f / 3.0f;
+		m_xOffset = tox / 2;
+		m_yOffset = 200;
 	}
     void CreateTitleAndLogo(HWND hWnd)
     {
@@ -45,7 +50,7 @@ public:
         m_page = 0;
         m_initialized = true;
 
-		int xOffset = 250, yOffset = 50;
+		int xOffset = m_xOffset, yOffset = m_yOffset;
 		RECT wndRect = { 0 };
 		GetClientRect(hWnd, &wndRect);
         int y = yOffset;
@@ -62,10 +67,13 @@ public:
         file.close();
 
         HINSTANCE hInstance = (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE);
-
+		static HFONT hFont = CreateFont(18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, L"Segoe UI");
         m_submit = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"SUBMIT", WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
-        m_nextPage = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"Next Page", WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
-        m_prevPage = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"Previous PAGE", WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
+		SendMessage(m_submit, WM_SETFONT, (WPARAM)hFont, TRUE);
+        m_nextPage = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"NEXT PAGE", WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
+		SendMessage(m_nextPage, WM_SETFONT, (WPARAM)hFont, TRUE);
+        m_prevPage = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"PREV PAGE", WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, NULL, hInstance, NULL);
+		SendMessage(m_prevPage, WM_SETFONT, (WPARAM)hFont, TRUE);
          
 	}
 
@@ -102,25 +110,34 @@ public:
         if (m_page < (max_q / qperpage))
         {
             if (m_page != 0){
-                MoveWindow(m_nextPage, wndRect.right / 2 + 10, y, 130, 100, true);
-                MoveWindow(m_prevPage, wndRect.right / 2 - 130 - 10, y, 130, 100, true);
+                MoveWindow(m_nextPage, wndRect.right / 2 + 10, y, 130, 40, true);
+                MoveWindow(m_prevPage, wndRect.right / 2 - 130 - 10, y, 130, 40, true);
             }
             else {
-                MoveWindow(m_nextPage, wndRect.right / 2 - 250 / 2, y, 250, 100, true);
+                MoveWindow(m_nextPage, wndRect.right / 2 - 250 / 2, y, 130, 30, true);
                 MoveWindow(m_prevPage, -wndRect.right, 0, 0, 0, true);
             }
             MoveWindow(m_submit, -wndRect.right, 0, 0, 0, true);
         }
         else
         {
-            MoveWindow(m_submit, wndRect.right / 2 + 10, y, 130, 100, true);
-            MoveWindow(m_prevPage, wndRect.right / 2 - 130 - 10, y, 130, 100, true);
+            MoveWindow(m_submit, wndRect.right / 2 + 10, y, 130, 30, true);
+            MoveWindow(m_prevPage, wndRect.right / 2 - 130 - 10, y, 130, 30, true);
             MoveWindow(m_nextPage, -wndRect.right, 0, 0, 0, true);
         }
 
         m_ymax = y + 150 - yoff;
     }
     int GetYMax() { return m_ymax; }
+	int GetNoOfSolvedQuestions()
+	{
+		int count = 0;
+		for (unsigned int i = 0; i < max_q; ++i)
+		{
+			if (m_q[i].GetAnswer() != -1) ++count;
+		}
+		return count;
+	}
 
     void Submit(User &user)
     {
