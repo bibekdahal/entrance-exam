@@ -142,15 +142,15 @@ void CreateLoginForm(HWND hWnd)
 	HINSTANCE hInst = (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE);
 	hLblName = CreateWindowEx(WS_EX_TRANSPARENT, L"STATIC", L"Name:", WS_VISIBLE | WS_CHILD | SS_SIMPLE,
 		x, y, 110, 30, hWnd, NULL, hInst, NULL);
-	hEditName = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", NULL, WS_VISIBLE | WS_CHILD | ES_AUTOHSCROLL,
+    hEditName = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", NULL, WS_TABSTOP | WS_VISIBLE | WS_CHILD | ES_AUTOHSCROLL,
 		x + 120, y - 4, 300, 30, hWnd, NULL, hInst, NULL);
-	hLblUN = CreateWindowEx(WS_EX_TRANSPARENT, L"STATIC", L"Exam Roll No:", WS_VISIBLE | WS_CHILD | SS_SIMPLE,
+    hLblUN = CreateWindowEx(WS_EX_TRANSPARENT, L"STATIC", L"Exam Roll No:", WS_VISIBLE | WS_CHILD | SS_SIMPLE,
 		x, y + 60, 110, 30, hWnd, NULL, hInst, NULL);
-	hEditUN = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", NULL, WS_VISIBLE | WS_CHILD | ES_AUTOHSCROLL,
+    hEditUN = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", NULL, WS_TABSTOP | WS_VISIBLE | WS_CHILD | ES_AUTOHSCROLL,
 		x + 120, y + 60 - 4, 300, 30, hWnd, NULL, hInst, NULL);
-	hLblPW = CreateWindowEx(WS_EX_TRANSPARENT, L"STATIC", L"Password:", WS_VISIBLE | WS_CHILD | SS_SIMPLE,
+    hLblPW = CreateWindowEx(WS_EX_TRANSPARENT, L"STATIC", L"Password:", WS_VISIBLE | WS_CHILD | SS_SIMPLE,
 		x, y + 120, 110, 160, hWnd, NULL, hInst, NULL);
-	hEditPW = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", NULL, WS_VISIBLE | WS_CHILD | ES_AUTOHSCROLL,
+    hEditPW = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", NULL, WS_TABSTOP | WS_VISIBLE | WS_CHILD | ES_AUTOHSCROLL,
 		x + 120, y + 120 - 4, 300, 30, hWnd, NULL, hInst, NULL);
 	hLoginSubmitBttn = CreateWindowEx(WS_EX_WINDOWEDGE, L"BUTTON", L"Login", WS_VISIBLE | WS_CHILD, 
 		x + 420 - 100, y + 180, 100, 30, hWnd, NULL, (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE), NULL);
@@ -232,9 +232,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             rc.left = 30;
             rc.right = 300;
 			rc.top = 30;
-            hours = count / 3600;
-            minutes = (count / 60) % 60;
-            seconds = count % 60;
 			wchar_t fbuff[256] = { 0 };
 			MultiByteToWideChar(CP_ACP, 0, user.UserName().c_str(), -1, fbuff, sizeof(fbuff));
 			HBRUSH hBR = CreateSolidBrush(RGB(230, 230, 230));
@@ -243,7 +240,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			rcf.left = GetSystemMetrics(SM_CXSCREEN) - 200;
 			rcf.right = GetSystemMetrics(SM_CXSCREEN);
 			FillRect(hdc, &rcf, hBR);
-			SetBkMode(hdc, TRANSPARENT);
+            SetBkMode(hdc, TRANSPARENT); hours = count / 3600;
+            minutes = (count / 60) % 60;
+            seconds = count % 60;
             wsprintf(szBuffer, L"Remaining Time:\n%2d min : %2d sec\nExam Roll No.: %s\nQuestion Solved: %2d/65", minutes, seconds, fbuff, mainPage.GetNoOfSolvedQuestions());
             DrawText(hdc, szBuffer, -1, &rc, DT_LEFT);
 			
@@ -281,12 +280,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     case WM_COMMAND:
         if ((HWND)lParam == mainPage.GetSubmitHandle())
         {
+            if (IDYES != MessageBox(hwnd, L"Are you sure you want to submit?\n\rOnce submitted, you can't change your answers", L"Confirm", MB_YESNO | MB_ICONINFORMATION))
+                break;
 
             VscrollPos = 0;
             SetScrollPos(hwnd, SB_VERT, 0, TRUE);
             mainPage.ResizeControls(g_main, 0);
-            if (IDYES == MessageBox(hwnd, L"Are you sure you want to submit?\n\rOnce submitted, you can't change your answers", L"Confirm", MB_YESNO | MB_ICONINFORMATION))
-                mainPage.Submit(user);
+            mainPage.Submit(user);
             GetClientRect(g_main, &rc);
             si.cbSize = sizeof(si);
             si.fMask = SIF_RANGE | SIF_PAGE;
@@ -296,6 +296,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
 
             examrunning = false;
+            InvalidateRect(g_main, NULL, TRUE);
         }
         else if ((HWND)lParam == mainPage.GetNextPageHandle() || (HWND)lParam == mainPage.GetPrevPageHandle())
         {

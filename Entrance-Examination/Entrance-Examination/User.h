@@ -74,4 +74,5 @@ public:
 	}
 
     std::string UserName() { return m_username; }
+    std::string Name() { return m_name; }
 };

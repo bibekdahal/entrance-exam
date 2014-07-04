@@ -69,8 +69,15 @@ void LoadFromFile(TCHAR * filename)
     file.read((char*)&size, sizeof(size));
     char* username = new char[size + 1]; username[size] = '\0';
     file.read(username, size);
-    g_text << "\t" << username << "\n";
+    g_text << "\tRoll No.: " << username << "\n";
     delete[] username;
+
+    file.read((char*)&size, sizeof(size));
+    char* name = new char[size + 1]; name[size] = '\0';
+    file.read(name, size);
+    g_text << "\tName: " << name << "\n";
+    delete[] name;
+
     file.read((char*)&size, sizeof(size));
     for (unsigned int i = 0; i < size; ++i)
     {

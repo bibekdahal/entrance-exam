@@ -25,7 +25,7 @@ public:
 	{
 		int w = GetSystemMetrics(SM_CXSCREEN);
 		int h = GetSystemMetrics(SM_CYSCREEN);
-		int tox = h*4.0f / 3.0f;
+		int tox = int(h*4.0f / 3.0f);
 		m_xOffset = tox / 2;
 		m_yOffset = 200;
 	}
@@ -150,6 +150,9 @@ public:
         unsigned int size = user.UserName().size();
         file.write((char*)&size, sizeof(size));
         file.write(user.UserName().c_str(), size);
+        size = user.Name().size();
+        file.write((char*)&size, sizeof(size));
+        file.write(user.Name().c_str(), size);
         size = max_q;
         file.write((char*)&size, sizeof(size));
         for (unsigned int i = 0; i < size; ++i)
