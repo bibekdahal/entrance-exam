@@ -44,7 +44,7 @@ public:
 	UserStream()
 	{
 		char buff[10] = { 0 };
-		itoa(++idCounter, buff, 10);
+		_itoa_s(++idCounter, buff, 10);
 		id = std::string(buff);
 		pw = GetRandomString();
 	}
@@ -180,10 +180,10 @@ void RemoveLoginForm()
 
 const int ID_TIMER = 10;
 bool examrunning = false;
-void Start(Page & mainPage, HWND hwnd)
+void Start(Page & mainPage, HWND hwnd, char * buffUN)
 {
     examrunning = true;
-    mainPage.Initialize(hwnd);
+    mainPage.Initialize(hwnd, buffUN);
     mainPage.ResizeControls(hwnd, 0);
     RECT rc;
     SCROLLINFO si;
@@ -391,7 +391,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						RemoveLoginForm();
 						onScreenKeyboard.CleanUp();
-						Start(mainPage, g_main);
+						Start(mainPage, g_main, buffUN);
 					}
 					else
 					{
