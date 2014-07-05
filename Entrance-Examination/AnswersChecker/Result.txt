@@ -1,20 +1,170 @@
-	Roll No.: 1201
-	Name: 
-		Correct Answers: 2
-		Incorrect Answers: 1
-
-	Roll No.: 1203
-	Name: 
-		Correct Answers: 2
-		Incorrect Answers: 1
-
-	Roll No.: 1245
-	Name: Bibek2
-		Correct Answers: 2
-		Incorrect Answers: 2
-
-	Roll No.: 1246
-	Name: Bibek
-		Correct Answers: 3
-		Incorrect Answers: 0
-
+	Name                  	Roll No.	Correct Answers	Incorrect Answers
+	______                	_________	_______________	_________________
+	1034                   	     1342	             33	               32
+	ALISHA GAUTAM          	     1401	             22	               43
+	Aadesh kumar karn      	     1351	             32	               23
+	Aarati Sigdel          	     1406	             20	               43
+	Aashish Prajapati      	     1397	             16	               49
+	Abesh Jung Karki       	     1292	             49	               14
+	Abhiyan Pokharel       	     1329	             33	               22
+	Akshay Kumar Gurung    	     1369	              0	                0
+	Amin Shakya            	     1371	             45	               20
+	Angel Hamal Thakuri    	     1389	              8	               57
+	Anmol chhetri          	     1210	             37	               28
+	Arun Paudel            	     1381	             15	               50
+	Ashin Shakya           	     1297	             42	               15
+	Ashish Thapa           	     1319	             48	               13
+	BINITA POUDEL          	     1407	             15	               46
+	Bal Bahadur Gole       	     1367	             21	               44
+	Bibek Shakya           	     1295	             36	               22
+	Bibek Shrestha         	     1207	             24	               41
+	Bijesh Shrestha        	     1298	             43	               19
+	Bikal Paudel           	     1363	             29	               28
+	Bimal paudel           	     1336	             53	               12
+	Binita Tiwari          	     1303	             35	               27
+	Binod Kumar Tharu      	     1338	             23	               37
+	Bipin Lamichhane       	     1245	              0	                0
+	Bisham Dhakal          	     1208	             33	               32
+	Brikhesh kumar raut    	     1404	             18	               47
+	Brishan rai            	     1376	             26	               39
+	Depenti Karki          	     1403	             17	               45
+	Dipkiran Pradhan       	     1402	             18	               46
+	Diwas Pun              	     1317	              0	                0
+	Ekta kharel            	     1231	              0	                0
+	Giri Prasad Pun        	     1380	              0	                0
+	Hikmat kc              	     1393	             15	               50
+	Jagdish Raj Baral      	     1212	             27	               31
+	Janak Raj Bhatta       	     1346	             32	               33
+	Kaita ghimire          	     1232	              0	                0
+	Kamal Gautam           	     1384	             15	               44
+	Kushal Acharya         	     1216	             34	               19
+	Kushal Thapa           	     1226	              0	                0
+	Laxmi Poudel           	     1302	              0	                0
+	Manish Kumar Yadav     	     1353	             35	               30
+	Mayank Kumar Gurung    	     1359	              0	                0
+	Milan Bhattarai        	     1235	              0	                0
+	Mishan Shakya          	     1341	             26	               39
+	Nagendra Kumar Sah     	     1300	             31	               34
+	Nikesh Shrestha        	     1237	              0	                0
+	Nikhil Rokka           	     1314	              0	                0
+	Pankaj upreti          	     1400	             14	               42
+	Pooja Dhakal           	     1415	             16	               46
+	Prabin K Shrestha      	     1345	             32	               33
+	Prakriti Koirala       	     1355	             28	               37
+	Prakriti Pahari        	     1390	             25	               40
+	Pramod Bhatta          	     1395	              0	                0
+	Puja Karki             	     1229	              0	                0
+	ROYAL BHANDARI         	     1209	             35	               30
+	RUPA CHAULAGAIN        	     1423	              0	                0
+	Rahul Kamal Bajracharya	     1337	             31	               34
+	Rajan Chaudhary        	     1361	              0	                0
+	Rajib                  	     1372	             53	               12
+	Rajiv kumar yadav      	     1242	             24	               41
+	Raju poudel            	     1228	             37	               28
+	Rinku Kumar dhawal     	     1334	             44	               21
+	Rocky Kumar Mishra     	     1348	             20	               34
+	Roshan Bohara          	     1410	             14	               42
+	Rupesh Choudhary       	     1386	             22	               42
+	SHUBHAM AGRAWAL        	     1343	             33	               31
+	SUDEEP THAPALIYA       	     1323	              0	                0
+	Sabindra Shrestha      	     1296	             38	               27
+	Sachita Pathak         	     1383	             13	               47
+	Sadiksya poudel        	     1234	              0	                0
+	Sambandha Dhoj Khati   	     1414	              0	                0
+	Sampurna               	     1349	             29	               36
+	Sandesh Adhikari       	     1344	             35	               15
+	Sanjay Kumar Ray       	     1331	             36	               29
+	Sanjay Kumar Yadav     	     1333	             40	               25
+	Shrawan kumar Ray      	     1409	             13	               52
+	Shreeja Adhikari       	     1422	              0	                0
+	Sonuja Thapa           	     1241	             37	               23
+	Sudip Pandey           	     1321	             33	               22
+	Suman Pakhrin          	     1236	              0	                0
+	Tapan Gautam           	     1227	             37	               28
+	Ujjwal Shrestha        	     1411	             20	               43
+	Umanga  Rai            	     1228	              0	                0
+	Umesh Kumar Chaudhary  	     1357	              0	                0
+	aakash bakhunchhe      	     1330	              0	                0
+	aayush bhandari        	     1352	             49	               16
+	abdul salam musalman   	     1328	             31	               34
+	abishek pathak         	     1202	             31	               31
+	abishkar adhikari      	     1222	             45	               20
+	adish deep shakya      	     1365	              0	                0
+	aishwarya gurung       	     1325	             22	               28
+	ajindra limbu          	     1354	              0	                0
+	amar dev               	     1378	              0	                0
+	ankit taparia          	     1238	             40	               21
+	arnav raj pandey       	     1219	             28	               25
+	aruna shrestha         	     1233	              0	                0
+	ashim siwakoti         	     1201	             32	               28
+	ashish karki           	     1375	             31	               33
+	asmita neupane         	     1230	              0	                0
+	bhagat pandey          	     1373	             37	               28
+	bidur ghimire          	     1405	             12	               52
+	bijay raj timilsina    	     1318	             39	               26
+	bijay sadashankar sunar	     1368	              0	                0
+	bijaya                 	     1364	             22	               43
+	bikash dhakal          	     1416	             16	               49
+	binod                  	     1201	              1	                4
+	biplav khatri          	     1360	             40	               18
+	bir bdr gt             	     1225	             38	               19
+	bishal dangol          	     1224	             28	               37
+	chiranjibi giri        	     1356	             18	               37
+	deepak foudar          	     1206	             13	               23
+	dinesh chaudhary       	     1420	             12	               53
+	dipan tikhatri         	     1316	             37	               28
+	goma gini              	     1320	             28	               28
+	gonish paudel          	     1312	             31	               34
+	guru prasad rijal      	     1418	             17	               42
+	himal gautam           	     1213	              0	                0
+	jagram yadav           	     1366	             20	               45
+	jashis man rajbhandari 	     1339	             33	               32
+	jay krishna yadav      	     1239	              0	                0
+	keshav thapa           	     1291	             45	               19
+	khumraj sharma         	     1412	             16	               49
+	kishor joshi           	     1243	             38	               27
+	krishna dahal          	     1335	             48	               17
+	krishna sapkota        	     1244	             46	               19
+	kusum rijal            	     1332	             19	               27
+	madhukant              	     1201	             29	               36
+	manoj kr silthariya    	     1294	             44	               21
+	mohammed reya          	     1218	             27	               38
+	nabin sapkota          	     1299	             20	               36
+	parash khand           	     1205	             41	               24
+	pradip giri            	     1379	             32	               33
+	prajwal bhusal         	     1203	              0	                0
+	prajwal khanal         	     1293	             43	               19
+	pratiksha gautam       	     1419	             15	               40
+	pujan pradhan          	     1217	              0	                0
+	rabin shah             	     1396	             17	               48
+	rajan poudel           	     1223	             48	               17
+	raju ansari            	     1396	             15	               50
+	ram prasad paudel3     	     1315	             24	               22
+	ranjit kumar sah       	     1324	             32	               33
+	ranju rai              	     1313	             37	               28
+	rosy adhikari          	     1240	             32	               24
+	sagar                  	     1214	             30	               33
+	sagar bimali           	     1221	              0	                0
+	samir niroula          	     1362	             58	                7
+	samir pokhrel          	     1377	              0	                0
+	sandeep ghimire        	     1340	             35	               26
+	sandes devkota         	     1424	             11	               54
+	sandip dangi           	     1358	             35	               29
+	santosh kumar sah      	     1345	             23	               29
+	santosh shrestha       	     1421	             15	               50
+	sapana neupane         	     1392	              0	                0
+	saroj paudyal          	     1204	             26	               17
+	saurav ghimire         	     1326	             34	               31
+	shiv kumar shah        	     1408	             19	               46
+	shruti dulal           	     1394	             17	               46
+	siwash ranjit          	     1311	             31	               30
+	sudip kafle            	     1388	              0	                0
+	sujata tamang          	     1315	             36	               29
+	sunil bhatta           	     1370	              0	                0
+	surakshya chapagain    	     1417	             14	               39
+	utsav                  	     1220	             31	               27
+	vivek kumar yadav      	     1327	             20	               45
+	yam bdr limbu          	     1374	             28	               37
+	yamendra gurung        	     1322	              0	                0
+	yog bahadur baral      	     1399	             11	               54
+	yunish                 	     1347	             25	               40
