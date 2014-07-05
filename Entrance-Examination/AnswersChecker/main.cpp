@@ -25,14 +25,10 @@ void ProcessFile(std::wstring filename)
     file.read((char*)&size, sizeof(size));
     char* username = new char[size + 1]; username[size] = '\0';
     file.read(username, size);
-    g_text << "\tRoll No.: " << username << "\n";
-    delete[] username;
 
     file.read((char*)&size, sizeof(size));
     char* name = new char[size + 1]; name[size] = '\0';
     file.read(name, size);
-    g_text << "\tName: " << name << "\n";
-    delete[] name;
 
     file.read((char*)&size, sizeof(size));
     for (unsigned int i = 0; i < size; ++i)
@@ -43,11 +39,15 @@ void ProcessFile(std::wstring filename)
         else if (ans != -1) incorrectanswers++;
     }
     file.close();
+    file.close();
 
+    g_text << "\tRoll No.: " << username << "\n";
+    g_text << "\tName: " << name << "\n";
     g_text << "\t\tCorrect Answers: " << correctanswers << "\n";
     g_text << "\t\tIncorrect Answers: " << incorrectanswers << "\n\n";
 
-    file.close();
+    delete[] username;
+    delete[] name;
 }
 
 void OpenFiles()
