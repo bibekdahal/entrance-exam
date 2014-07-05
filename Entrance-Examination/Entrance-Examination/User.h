@@ -7,6 +7,16 @@ const int g_maxQ = 65;
 #include <fstream>
 #include <vector>
 
+int FileExists(const TCHAR * file)
+{
+    WIN32_FIND_DATA FindFileData;
+    HANDLE handle = FindFirstFile(file, &FindFileData);
+    int found = handle != INVALID_HANDLE_VALUE;
+    if (found)
+        FindClose(handle);
+    return found;
+}
+
 class LoginData
 {
 	std::string uns[300];
@@ -65,13 +75,17 @@ public:
 	{
 		return false;
 	}
-	bool LogIn(std::string name, std::string username, std::string password)
+	void LogIn(std::string name, std::string username, std::string password)
 	{
-		if (!loginData.Find(username, password)) return false;
+        if (!loginData.Find(username, password)) throw std::string("Your Exam Roll No. and password did not match");
+
+        std::wstringstream ss(L"");
+        ss << "answers" << username.c_str() << ".fba";
+        if (FileExists(ss.str().c_str())) throw std::string("Your login session has expired");
+
 		m_username = username;
 		m_pass = password;
         m_name = name;
-		return true;
 	}
 
     std::string UserName() { return m_username; }

@@ -280,6 +280,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         si.nPage = yClient;
         SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
         break;
+    case WM_MOUSEWHEEL:
+        GetClientRect(hwnd, &rc);
+        prevpos = VscrollPos;
+        VscrollPos -= GET_WHEEL_DELTA_WPARAM(wParam) / 120 * 15;
+        VscrollPos = max(0, min(VscrollPos, mainPage.GetYMax() - rc.bottom + rc.top));
+        SetScrollPos(hwnd, SB_VERT, VscrollPos, TRUE);
+        InvalidateRect(hwnd, NULL, TRUE);
+        ScrollWindowEx(g_main, 0, prevpos - VscrollPos, NULL, NULL, NULL, &rc, SW_SCROLLCHILDREN | SW_ERASE | SW_INVALIDATE);
+
+        break;
     case WM_COMMAND:
         if ((HWND)lParam == mainPage.GetSubmitHandle())
         {
@@ -386,18 +396,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			}
 				try
 				{
-			
-					if (user.LogIn(buffName, buffUN, buffPW))
-					{
-						RemoveLoginForm();
-						onScreenKeyboard.CleanUp();
-						Start(mainPage, g_main, buffUN);
-					}
-					else
-					{
-						MessageBox(hwnd, L"Your Exam Roll No. and password did not match", L"Error Logging in", MB_OK | MB_ICONERROR);
-						break;
-					}
+                    user.LogIn(buffName, buffUN, buffPW);
+					RemoveLoginForm();
+					onScreenKeyboard.CleanUp();
+					Start(mainPage, g_main, buffUN);
 				}
 				catch (...)
 				{
@@ -424,7 +426,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             break;
         }
 
-		VscrollPos = max(0, min(VscrollPos, mainPage.GetYMax()));
+        VscrollPos = max(0, min(VscrollPos, mainPage.GetYMax() - rc.bottom + rc.top));
 
         if (VscrollPos != GetScrollPos(hwnd, SB_VERT)) {
             SetScrollPos(hwnd, SB_VERT, VscrollPos, TRUE);
