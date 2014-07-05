@@ -199,6 +199,44 @@ void Start(Page & mainPage, HWND hwnd, char * buffUN)
     UpdateWindow(hwnd);
 }
 
+RECT rcStatus = { 0 };
+
+void DrawStatusText(HWND hwnd, HDC hdc, User& user, Page& mainPage)
+{ 
+	int seconds = 0;
+	int minutes = 0;
+	int hours = 0;
+	int count = 60 * 60;
+	RECT rc = { 0 };
+	static HFONT hFont = CreateFont(18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, L"Segoe UI");
+	SelectObject(hdc, hFont);
+	GetClientRect(hwnd, &rc);
+	rc.left = 30;
+	rc.right = 300;
+	rc.top = 30;
+	wchar_t fbuff[256] = { 0 };
+	MultiByteToWideChar(CP_ACP, 0, user.UserName().c_str(), -1, fbuff, sizeof(fbuff));
+	HBRUSH hBR = CreateSolidBrush(RGB(230, 230, 230));
+	RECT rcf = { 0, 0, 200, GetSystemMetrics(SM_CYSCREEN) };
+	FillRect(hdc, &rcf, hBR);
+	rcf.left = GetSystemMetrics(SM_CXSCREEN) - 200;
+	rcf.right = GetSystemMetrics(SM_CXSCREEN);
+	FillRect(hdc, &rcf, hBR);
+	SetBkMode(hdc, TRANSPARENT); hours = count / 3600;
+	minutes = (count / 60) % 60;
+	seconds = count % 60;
+	wchar_t szBuffer[512];
+	wsprintf(szBuffer, L"Remaining Time:\n%2d min : %2d sec\nExam Roll No.: %s\nQuestion Solved: %2d/65", minutes, seconds, fbuff, mainPage.GetNoOfSolvedQuestions());
+	DrawText(hdc, szBuffer, -1, &rc, DT_LEFT);
+	rcStatus = rc;
+}
+
+void EraseStatusText(HDC hdc)
+{
+	HBRUSH hBR = CreateSolidBrush(RGB(230, 230, 230));
+	FillRect(hdc, &rcStatus, hBR);
+}
+
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static Page mainPage;
@@ -229,26 +267,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         if (count > 0 && examrunning)
         {
             hdc = BeginPaint(hwnd, &ps);
-			static HFONT hFont = CreateFont(20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, L"Segoe UI");
-			SelectObject(hdc, hFont);
-            GetClientRect(hwnd, &rc);
-            rc.left = 30;
-            rc.right = 300;
-			rc.top = 30;
-			wchar_t fbuff[256] = { 0 };
-			MultiByteToWideChar(CP_ACP, 0, user.UserName().c_str(), -1, fbuff, sizeof(fbuff));
-			HBRUSH hBR = CreateSolidBrush(RGB(230, 230, 230));
-			RECT rcf = { 0, 0, 200, GetSystemMetrics(SM_CYSCREEN) };
-			FillRect(hdc, &rcf, hBR);
-			rcf.left = GetSystemMetrics(SM_CXSCREEN) - 200;
-			rcf.right = GetSystemMetrics(SM_CXSCREEN);
-			FillRect(hdc, &rcf, hBR);
-            SetBkMode(hdc, TRANSPARENT); hours = count / 3600;
-            minutes = (count / 60) % 60;
-            seconds = count % 60;
-            wsprintf(szBuffer, L"Remaining Time:\n%2d min : %2d sec\nExam Roll No.: %s\nQuestion Solved: %2d/65", minutes, seconds, fbuff, mainPage.GetNoOfSolvedQuestions());
-            DrawText(hdc, szBuffer, -1, &rc, DT_LEFT);
-			
+			DrawStatusText(hwnd, hdc, user, mainPage);
             EndPaint(hwnd, &ps);
         }
         else if (examrunning)
@@ -431,7 +450,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         if (VscrollPos != GetScrollPos(hwnd, SB_VERT)) {
             SetScrollPos(hwnd, SB_VERT, VscrollPos, TRUE);
             InvalidateRect(hwnd, NULL, TRUE);
+			//HDC hDC = GetDC(hwnd);
+			//EraseStatusText(hdc);
             ScrollWindowEx(g_main, 0, prevpos - VscrollPos, NULL, NULL, NULL, &rc, SW_SCROLLCHILDREN | SW_ERASE | SW_INVALIDATE);
+			//DrawStatusText(hwnd, hdc, user, mainPage);
+			//ReleaseDC(hwnd, hdc);
 		}
 		break;
 	case WM_KEYDOWN:
