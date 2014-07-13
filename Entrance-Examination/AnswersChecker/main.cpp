@@ -24,7 +24,6 @@ void ProcessFile(std::wstring filename)
     file.open(filename, std::ios::in | std::ios::binary);
     int setid;
     file.read((char*)&setid, sizeof(setid));
-
     std::fstream afile;
     std::stringstream afname(""); afname << "set" << setid << ".txt";
     afile.open(afname.str().c_str(), std::ios::in);
@@ -60,7 +59,7 @@ void ProcessFile(std::wstring filename)
     auto inf = g_answers.find(name);
     if (inf != g_answers.end())
     {
-        if (inf->second.correctanswers < correctanswers)
+        if (inf->second.correctanswers + inf->second.incorrectanswers < correctanswers + incorrectanswers)
             g_answers[name] = info;
     }
     else
@@ -115,6 +114,6 @@ int main()
     ofile.close();
 
    
-    std::cout << g_text.str();
+   // std::cout << g_text.str();
     return 0;
 }

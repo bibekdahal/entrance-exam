@@ -16,6 +16,7 @@
 	Ashish Thapa           	     1319	             48	               13
 	BINITA POUDEL          	     1407	             15	               46
 	Bal Bahadur Gole       	     1367	             21	               44
+	Bibek Dahal            	     1201	              0	                0
 	Bibek Shakya           	     1295	             36	               22
 	Bibek Shrestha         	     1207	             24	               41
 	Bijesh Shrestha        	     1298	             43	               19

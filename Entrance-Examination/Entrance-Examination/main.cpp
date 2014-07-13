@@ -86,6 +86,10 @@ void BuildPass()
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPInst, char* line, int show)
 {
+    OleInitialize(0);
+    if (!AXRegister())
+        return 0;
+
     LoadLibrary(TEXT("Msftedit.dll"));
     InitCommonControls();
 
@@ -201,12 +205,12 @@ void Start(Page & mainPage, HWND hwnd, char * buffUN)
 
 RECT rcStatus = { 0 };
 
+int count = 60 * 60;
 void DrawStatusText(HWND hwnd, HDC hdc, User& user, Page& mainPage)
 { 
 	int seconds = 0;
 	int minutes = 0;
 	int hours = 0;
-	int count = 60 * 60;
 	RECT rc = { 0 };
 	static HFONT hFont = CreateFont(18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, L"Segoe UI");
 	SelectObject(hdc, hFont);
@@ -249,7 +253,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     HDC hdc;
     PAINTSTRUCT ps;
 	WCHAR szBuffer[200] = { 0 };
-    static int count = 60 * 60;
     int seconds = 0;
     int minutes = 0;
     int hours = 0;
@@ -257,6 +260,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     switch (msg)
     {
 	case WM_CREATE:
+
 		//mainPage.Initialize(hwnd);
         mainPage.CreateTitleAndLogo(hwnd);
 		CreateLoginForm(hwnd);
@@ -493,14 +497,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			SendMessage(hwnd, WM_VSCROLL, MAKELONG(wScrollNotify, 0), 0L);
 
 		break;
-    case WM_NOTIFY:
-        switch (((LPNMHDR)lParam)->code)
-        {
-        case EN_REQUESTRESIZE:
-            mainPage.Resize(((REQRESIZE*)lParam)->nmhdr.hwndFrom, ((REQRESIZE*)lParam)->rc.bottom - ((REQRESIZE*)lParam)->rc.top);
-            break;
-        }
-        break;
+    
     case WM_CTLCOLORSTATIC:
     {
                               HDC hdcStatic = (HDC)wParam;

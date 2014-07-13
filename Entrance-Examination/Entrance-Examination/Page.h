@@ -9,7 +9,6 @@ class Page
 {
 private:
     Question m_q[max_q];
-    std::map<HWND, int> m_sizes;
     HWND m_submit, m_nextPage, m_prevPage, m_title, m_logo;
     int m_ymax, m_page;
 	int m_xOffset, m_yOffset;
@@ -61,7 +60,7 @@ public:
 			m_q[i].Initialize(hWnd, i+1);
 
         std::fstream file;
-        std::stringstream ss(""); ss << "set" << m_setid << ".fbq";
+        std::stringstream ss(""); ss << "set" << m_setid << ".fbh";
         file.open(ss.str().c_str(), std::ios::in | std::ios::binary);
         unsigned int size;
         file.read((char*)&size, sizeof(size));
@@ -81,11 +80,6 @@ public:
          
 	}
 
-    void Resize(HWND hWnd, int height)
-    {
-        m_sizes[hWnd] = height;
-    }
-
     void ResizeControls(HWND hWnd, int yoff)
     {
         if (!m_initialized) return;
@@ -103,12 +97,12 @@ public:
         MoveWindow(m_title, wndRect.right / 2 - 250, 90 + 15 + yoff, 500, 180, true);
 
         for (int i = 0; i < startq; i++)
-            m_q[i].Reposition(-wndRect.right*2, dummy, wndRect.right - 2 * xOffset, m_sizes);
+            m_q[i].Reposition(-wndRect.right*2, dummy, wndRect.right - 2 * xOffset);
         for (int i = endq; i < max_q; i++)
-            m_q[i].Reposition(-wndRect.right*2, dummy, wndRect.right - 2 * xOffset, m_sizes);
+            m_q[i].Reposition(-wndRect.right*2, dummy, wndRect.right - 2 * xOffset);
 
         for (int i = startq; i < endq; i++)
-            m_q[i].Reposition(xOffset, y, wndRect.right - 2 * xOffset, m_sizes);
+            m_q[i].Reposition(xOffset, y, wndRect.right - 2 * xOffset);
 
 
         if (m_page < (max_q / qperpage))

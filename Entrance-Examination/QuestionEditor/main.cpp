@@ -6,6 +6,7 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
+#include <direct.h>
 using namespace std;
 
 #include "resource.h"
@@ -20,6 +21,7 @@ struct Question
 {
     string q, oa, ob, oc, od;
     char ans;
+    string hq, hoa, hob, hoc, hod;
 };
 vector<Question> g_questions;
 int g_index;
@@ -48,6 +50,12 @@ string GetRTF(int rtb)
     es.pfnCallback = &EditStreamOutCallback;
     SendDlgItemMessage(g_hdlg, rtb, EM_STREAMOUT, SF_RTF, (LPARAM)&es);
     return rtf.str();
+}
+void Select(int rtb, int start, int end)
+{
+    CHARRANGE cr;
+    cr.cpMin = start; cr.cpMax = end;
+    SendDlgItemMessage(g_hdlg, rtb, EM_EXSETSEL, NULL, (LPARAM)&cr);
 }
 string GetSelectedRtf(int rtb)
 {
@@ -143,8 +151,141 @@ void Changed()
     else if (IsDlgButtonChecked(g_hdlg, IDC_RADIO4)) q.ans = 3;
 }
 
+DWORD CALLBACK EditStreamCallback(DWORD_PTR dwCookie, LPBYTE lpBuff, LONG cb, PLONG pcb)
+{
+    HANDLE hFile = (HANDLE)dwCookie;
+
+    if (ReadFile(hFile, lpBuff, cb, (DWORD *)pcb, NULL))
+        return 0;
+    return -1;
+}
+
+BOOL FillRichEditFromFile(HWND hwnd, LPCTSTR pszFile)
+{
+    BOOL fSuccess = FALSE;
+    HANDLE hFile = CreateFile(pszFile, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+
+    if (hFile != INVALID_HANDLE_VALUE)
+    {
+        EDITSTREAM es = { 0 };
+
+        es.pfnCallback = EditStreamCallback;
+        es.dwCookie = (DWORD_PTR)hFile;
+
+        if (SendMessage(hwnd, EM_STREAMIN, SF_RTF, (LPARAM)&es) && es.dwError == 0)
+            fSuccess = TRUE;
+
+        CloseHandle(hFile);
+    }
+    return fSuccess;
+}
+
+void Publish()
+{
+    WCHAR ccurrentpath[MAX_PATH];
+    GetCurrentDirectory(MAX_PATH, ccurrentpath);
+
+
+    TCHAR szFileName[MAX_PATH] = L"";
+    OPENFILENAME ofn = { 0 };
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = g_main;
+    ofn.lpstrFilter = L"Question Files (*.fbh)\0*.fbh";
+    ofn.lpstrFile = szFileName;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
+    ofn.lpstrDefExt = L"fbq";
+
+    if (GetSaveFileName(&ofn))
+    {
+
+        SetCurrentDirectory(ccurrentpath);
+        fstream file;
+        file.open("temp1.dat", std::ios::out);
+
+        for (unsigned i = 0; i < g_questions.size(); ++i)
+        {
+            Question &q = g_questions[i];
+            file << q.q;
+            file << "==================================================================";
+            file << q.oa;
+            file << "==================================================================";
+            file << q.ob;
+            file << "==================================================================";
+            file << q.oc;
+            file << "==================================================================";
+            file << q.od;
+            file << "==================================================================";
+        }
+        file.close();
+
+        std::wstring wide(szFileName);
+        std::string str1(wide.begin(), wide.end());
+        str1 = str1.substr(str1.find_last_of('\\') + 1, str1.find(".fbh") - str1.find_last_of('\\') - 1);
+        string cmd = "RTFHTMLConverter temp1.dat " + str1;
+        system(cmd.c_str());
+
+        std::ifstream t("temp.dat");
+        std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+
+        string sep = "==================================================================";
+        unsigned int index = 0;
+        for (unsigned i = 0; i < g_questions.size(); ++i)
+        {
+            g_questions[i].hq = str.substr(index, str.find(sep, index) - index);
+            index = str.find(sep, index) + sep.size();
+            g_questions[i].hoa = str.substr(index, str.find(sep, index) - index);
+            index = str.find(sep, index) + sep.size();
+            g_questions[i].hob = str.substr(index, str.find(sep, index) - index);
+            index = str.find(sep, index) + sep.size();
+            g_questions[i].hoc = str.substr(index, str.find(sep, index) - index);
+            index = str.find(sep, index) + sep.size();
+            g_questions[i].hod = str.substr(index, str.find(sep, index) - index);
+            index = str.find(sep, index) + sep.size();
+        }
+
+
+        {
+            std::fstream file;
+            file.open(szFileName, std::ios::out | std::ios::binary);
+            unsigned int size = g_questions.size();
+            file.write((char*)&size, sizeof(size));
+            for (unsigned int i = 0; i < size; ++i)
+            {
+                int length = (int)g_questions[i].hq.size();
+                file.write((char*)&length, sizeof(length));
+                file.write(g_questions[i].hq.c_str(), length);
+
+                length = g_questions[i].hoa.size();
+                file.write((char*)&length, sizeof(length));
+                file.write(g_questions[i].hoa.c_str(), length);
+
+                length = g_questions[i].hob.size();
+                file.write((char*)&length, sizeof(length));
+                file.write(g_questions[i].hob.c_str(), length);
+
+                length = g_questions[i].hoc.size();
+                file.write((char*)&length, sizeof(length));
+                file.write(g_questions[i].hoc.c_str(), length);
+
+                length = g_questions[i].hod.size();
+                file.write((char*)&length, sizeof(length));
+                file.write(g_questions[i].hod.c_str(), length);
+
+                file.write(&g_questions[i].ans, sizeof(g_questions[i].ans));
+            }
+            file.close();
+        }
+    }
+
+    SetCurrentDirectory(ccurrentpath);
+}
 void Save()
 {
+    WCHAR ccurrentpath[MAX_PATH];
+    GetCurrentDirectory(MAX_PATH, ccurrentpath);
+
+
     TCHAR szFileName[MAX_PATH] = L"";
     OPENFILENAME ofn = { 0 };
     ofn.lStructSize = sizeof(ofn); 
@@ -187,10 +328,15 @@ void Save()
         }
         file.close();
     }
+
+    SetCurrentDirectory(ccurrentpath);
 }
 
 void Open()
 {
+    WCHAR ccurrentpath[MAX_PATH];
+    GetCurrentDirectory(MAX_PATH, ccurrentpath);
+
     TCHAR szFileName[MAX_PATH] = L"";
     OPENFILENAME ofn = { 0 };
     ofn.lStructSize = sizeof(ofn);
@@ -229,13 +375,7 @@ void Open()
         file.close();
         Update();
     }
-}
-
-void Select(int rtb, int start, int end)
-{
-    CHARRANGE cr;
-    cr.cpMin = start; cr.cpMax = end;
-    SendDlgItemMessage(g_hdlg, rtb, EM_EXSETSEL, NULL, (LPARAM)&cr);
+    SetCurrentDirectory(ccurrentpath);
 }
 void SmartPaste()
 {
@@ -320,6 +460,9 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             break;
         case IDC_CLEAR:
             Clear();
+            break;
+        case IDC_PUBLISH:
+            Publish();
             break;
         }
         break;
